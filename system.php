@@ -94,8 +94,6 @@ if (!$_SESSION) {
 								}
 							}
 
-							echo "Test";
-
 							?>							
 							
 						</table>

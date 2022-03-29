@@ -69,32 +69,43 @@ if (!$_SESSION) {
 								<tr class="table-custom text-uppercase fs-7">
 									<th scope="col"></th>
 									<th scope="col">Book</th>
-									<th scope="col" class="text-end">Last Sell</th>
-									<th scope="col" class="text-end">Last Price</th>
+									<th scope="col" class="text-end">Last buy price</th>
+									<th scope="col" class="text-end">Current Price</th>
 									<th scope="col" class="text-end">Low Price</th>
 									<th scope="col" class="text-end">High Price</th>
+									<th scope="col" class="text-end">Volume</th>	
 									<th scope="col" class="text-end">Change</th>
-									<th scope="col" class="text-end">Volume</th>									
 								</tr>
 							</thead>
 
 							<?php
 
-							$bitsoWallet = new BitsoWallet();
-							$bitsoTicker = $bitsoWallet->getFullTicker();
+							$bitsoWallet   = new BitsoWallet();
+							$bitsoTicker   = $bitsoWallet->getFullTicker();
 
 							foreach ($bitsoTicker as $key => $value) {
 								$change_percent = ($value['change']/ $value['last']) * 100;
+								$change_percent = number_format($change_percent, 2);
+
+								$last_buy_price = $bitsoWallet->getLatestCurrencySell($key);
+
+								$row_down = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></td>';
+
+								$row_up = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00aa00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg></td>';
 
 								echo "<tr>";
 								echo 	"<td></td>";
 								echo 	"<td>". $key ."</td>";
-								echo 	"<td></td>";
+								echo 	"<td class='text-end'>". convertMoney( $last_buy_price ) ."</td>";
 								echo 	"<td class='text-end'>". convertMoney( $value['last'] ) ."</td>";
 								echo 	"<td class='text-end'>". convertMoney( $value['low'] ) ."</td>";
 								echo 	"<td class='text-end'>". convertMoney( $value['high'] ) ."</td>";
-								echo 	"<td class='text-end'>". number_format($change_percent,2) ."% </td>";
-								echo 	"<td class='text-end'>". convertMoney( $value['volum'] ) ."</td>";	
+								echo 	"<td class='text-end'>". convertMoney( $value['volum'] ) ."</td>";
+								if ($change_percent < 0){
+								echo 	"<td class='text-end text-danger'>". $change_percent .'%'. $row_down;
+								} else {
+								echo 	"<td class='text-end text-success'>". $change_percent .'%'. $row_up;
+								}
 								echo "</tr>";
 							}
 

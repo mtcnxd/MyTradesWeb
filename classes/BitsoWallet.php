@@ -63,15 +63,13 @@ class BitsoWallet extends Bitso
 		}
 	}
 
-	public function getLatestBuy()
+	public function getLatestCurrencySell($book)
 	{
 		$mysql = new MySQL();
-		$query = "SELECT * FROM `wallet_balance` WHERE status = 0 ORDER BY book";
-		$data  = $mysql->mySQLquery();
+		$query = "SELECT * FROM wallet_balance WHERE status = 0 AND book = '$book' LIMIT 1";
+		$data  = $mysql->mySQLquery($query);
 
-		if (!empty($data)){
-			return $array;
-		}
+		return $data[0]->price;
 	}
 
 	/*
