@@ -33,11 +33,11 @@ $mysql->mySQLquery($query);
 	Almacena los datos para el analisis de compras
 */
 
-$currencies_toCheck = [ 'bch_mxn','btc_mxn','eth_mxn','ltc_mxn' ];
-$markets = $bitsoWallet->getTicker();
+$favorits = ['btc_mxn','bch_mxn','ltc_mxn','mana_mxn','bat_mxn'];
+$markets  = $bitsoWallet->getTicker();
 
 foreach ($markets as $book => $price) {
-	if ( in_array($book, $currencies_toCheck) ){
+	if ( in_array($book, $favorits) ){
 		$query   = "INSERT INTO wallet_analytics(book, price) VALUES ('$book', '$price')";
 		$mysql->mySQLquery($query);
 	}

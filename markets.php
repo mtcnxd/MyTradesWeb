@@ -83,7 +83,7 @@ if (!$_SESSION) {
 							$bitsoWallet   = new BitsoWallet();
 							$bitsoTicker   = $bitsoWallet->getFullTicker();
 
-							$favorits 	   = ['btc_mxn','bch_mxn','ltc_mxn'];
+							$favorits 	   = ['btc_mxn','bch_mxn','ltc_mxn','mana_mxn','bat_mxn'];
 
 							foreach ($bitsoTicker as $key => $value) {
 
