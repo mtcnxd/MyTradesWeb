@@ -19,9 +19,14 @@ $currentBalance = array_sum(array_values($balances_array));
 $walletChange = (($currentBalance - $latestBalance) / $currentBalance) * 100;
 $walletChange = number_format($walletChange, 2);
 
+if ($walletChange <= -1.0){
+	$bitsoWallet->sendWebHook('BitsoWallet');
+}
+
 $mysql   = new MySQL();
 $query   = "INSERT INTO wallet_performance(amount, difference) VALUES ('$currentBalance', '$walletChange')";
 $mysql->mySQLquery($query);
+
 
 
 /*

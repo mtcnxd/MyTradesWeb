@@ -75,6 +75,19 @@ class BitsoWallet extends Bitso
 
 	}
 
+	public function getMinimunMaximun($book)
+	{
+		$mysql = new MySQL();
+		$query = "SELECT min(price) minimum, max(price) maximun, ((min(price) - max(price))/max(price))*100 diff, date 
+				  FROM (SELECT * FROM wallet_analytics WHERE book = '$book' ORDER BY date DESC LIMIT 24) Tbl";
+		$data  = $mysql->mySQLquery($query);
+
+		if(!empty($data)){
+			return $data[0];
+		}				  
+
+	}
+
 	/*
 	ONLY API LEVEL
 	*/
