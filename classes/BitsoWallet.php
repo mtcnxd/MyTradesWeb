@@ -69,7 +69,10 @@ class BitsoWallet extends Bitso
 		$query = "SELECT * FROM wallet_balance WHERE status = 0 AND book = '$book' LIMIT 1";
 		$data  = $mysql->mySQLquery($query);
 
-		return $data[0]->price;
+		if(!empty($data)){
+			return $data[0]->price;
+		}
+
 	}
 
 	/*
