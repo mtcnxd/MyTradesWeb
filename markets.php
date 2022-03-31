@@ -80,10 +80,10 @@ if (!$_SESSION) {
 
 							<?php
 
-							$bitsoWallet   = new BitsoWallet();
-							$bitsoTicker   = $bitsoWallet->getFullTicker();
+							$bitsoWallet = new BitsoWallet();
+							$bitsoTicker = $bitsoWallet->getFullTicker();
 
-							$favorits 	   = ['btc_mxn','bch_mxn','ltc_mxn','mana_mxn','bat_mxn'];
+							$favorits 	 = ['btc_mxn','bch_mxn','ltc_mxn','mana_mxn','bat_mxn','eth_mxn'];
 
 							foreach ($bitsoTicker as $key => $value) {
 

@@ -33,7 +33,7 @@ $mysql->mySQLquery($query);
 	Almacena los datos para el analisis de compras
 */
 
-$favorits = ['btc_mxn','bch_mxn','ltc_mxn','mana_mxn','bat_mxn'];
+$favorits = ['btc_mxn','bch_mxn','ltc_mxn','mana_mxn','bat_mxn','eth_mxn'];
 $markets  = $bitsoWallet->getTicker();
 
 foreach ($markets as $book => $price) {
