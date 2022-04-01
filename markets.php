@@ -74,7 +74,7 @@ if (!$_SESSION) {
 									<th scope="col" class="text-end">Change</th>									
 									<th scope="col" class="text-end">Low Price</th>
 									<th scope="col" class="text-end">Change (24h)</th>
-									<th scope="col" class="text-end">Minimun (24 h)</th>
+									<th scope="col" class="text-end">Minimun (24h)</th>
 								</tr>
 							</thead>
 
@@ -94,6 +94,7 @@ if (!$_SESSION) {
 
 									$last_buy_price = $bitsoWallet->getLatestCurrencySell($key);
 									$change_24 		= $bitsoWallet->getMinimunMaximun($key);
+									$calc_entry		= (($value['last'] - $change_24->minimum)/$value['last']) *100;
 
 									$row_down = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></td>';
 
@@ -110,10 +111,10 @@ if (!$_SESSION) {
 									echo 	"<td class='text-end text-success'>". $change_percent .'%'. $row_up;
 									}									
 									echo 	"<td class='text-end'>". convertMoney( $value['low'] ) ."</td>";
-									if ($change_24->diff < 0){
-									echo 	"<td class='text-end text-danger'>". number_format( $change_24->diff,2 ) ."% </td>";
+									if ($calc_entry < 0){
+									echo 	"<td class='text-end text-danger'>". number_format( $calc_entry,2 ) ."% </td>";
 									} else {
-									echo 	"<td class='text-end text-success'>". number_format( $change_24->diff,2 ) ."% </td>";
+									echo 	"<td class='text-end text-success'>". number_format( $calc_entry,2 ) ."% </td>";
 									}
 									echo 	"<td class='text-end'>". convertMoney($change_24->minimum) ."</td>";
 									echo "</tr>";									
