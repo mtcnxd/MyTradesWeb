@@ -66,7 +66,7 @@ class BitsoWallet extends Bitso
 	public function getLatestCurrencySell($book)
 	{
 		$mysql = new MySQL();
-		$query = "SELECT * FROM wallet_balance WHERE status = 0 AND book = '$book' LIMIT 1";
+		$query = "SELECT * FROM wallet_balance WHERE status = 0 AND book = '$book' ORDER BY sell_date DESC LIMIT 1";
 		$data  = $mysql->mySQLquery($query);
 
 		if(!empty($data)){
