@@ -88,6 +88,25 @@ class BitsoWallet extends Bitso
 
 	}
 
+	public function getWalletBalances()
+	{
+		$balances = $this->getBalance();
+		$ticker   = $this->getTicker();
+
+		$balanceValue = array();
+		foreach ($balances as $key => $value) {
+			$book = $value->currency.'_mxn';
+
+			if( array_key_exists($book, $ticker) ){
+				$balanceValue[$value->currency] = $value->total * $ticker[$book];
+			}
+		}
+
+
+		return $balanceValue;
+
+	}
+
 	/*
 	ONLY API LEVEL
 	*/
