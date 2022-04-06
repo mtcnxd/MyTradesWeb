@@ -156,7 +156,7 @@ class BitsoWallet extends Bitso
 	{
 		$date = date('dmY');
 		$file = fopen('/home/fortechm/test.fortech.mx/crons/'.$filename.'-'.$date.'.log' , 'a+');
-		fwrite($file, $content);
+		fwrite($file, 'Content: '. $content);
 		fclose($file);
 	}	
 	
