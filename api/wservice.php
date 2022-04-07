@@ -86,6 +86,9 @@ switch($request){
 		break;
 
 	case 'balances':
+		$result = $bitsoWallet->getWalletBalances();
+
+		echo json_encode($result);
 
 	break;
 

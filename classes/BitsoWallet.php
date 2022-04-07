@@ -97,8 +97,25 @@ class BitsoWallet extends Bitso
 		foreach ($balances as $key => $value) {
 			$book = $value->currency.'_mxn';
 
-			if( array_key_exists($book, $ticker) ){
-				$balanceValue[$value->currency] = $value->total * $ticker[$book];
+			if ($value->total > 0.002){
+
+				if( array_key_exists($book, $ticker) ){
+					$balanceValue[] = [
+						'currency' => $value->currency,
+						'amount'   => $value->total,
+						'value'    => $value->total * $ticker[$book],
+					];
+				} else {
+					$book = $value->currency.'_usd';
+					if (array_key_exists($book, $ticker)){
+						$balanceValue[] = [
+							'currency' => $value->currency,
+							'amount'   => $value->total,
+							'value' => $value->total * $ticker[$book] * $ticker['usd_mxn'],
+						];
+					}
+				}				
+
 			}
 		}
 
