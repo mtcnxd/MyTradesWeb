@@ -129,7 +129,7 @@ if (!$_SESSION) {
 										$total_usd = $balance->total * $ticker_currencys['usd_mxn'];
 										$total_mxn = $ticker_currencys[$book] * $balance->total;
 										$balance_mxn[$balance->currency] = $total_mxn;
-										$chart_data[$balance->currency] = $total_mxn;
+										$chart_data[$balance->currency]  = $total_mxn;
 										$value_total += $total_mxn;
 										
 										if ($balance->currency == 'usd')
@@ -149,7 +149,7 @@ if (!$_SESSION) {
 										$total_usd = $ticker_currencys[$book] * $balance->total;
 										$total_mxn = $total_usd * $ticker_currencys['usd_mxn'];
 										$balance_mxn[$balance->currency] = $total_mxn;
-										$chart_data[$balance->currency] = $total_mxn;											
+										$chart_data[$balance->currency]  = $total_mxn;											
 										$value_total += $total_mxn;
 										
 										echo "<div class='ms-2'>
@@ -214,10 +214,10 @@ if (!$_SESSION) {
 									<div class="align-items-center row">
 										<div class="col">
 											<h6 class="card-title text-muted text-uppercase fs-7">
-												Performance last 24 hours
+												Performance last 36 hours
 											</h6>
 											<h5 class="card-subtitle mb-2 fs-6">
-												<?=getPerformanceIntime(24) .'%';?>
+												<?=getPerformanceIntime(36) .'%';?>
 											</h5>			
 										</div>
 										<div class="col-auto">					

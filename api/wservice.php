@@ -56,18 +56,28 @@ switch($request){
 		$currentBalance = array_sum(array_values($balances_array));
 
 		$data_array[0] = array(
-			"key1" 	 => "CURRENT PERFORMANCE",
-			"value1" => '$'. $bitsoWallet->getCurrentChange($currentBalance) .'%',
-			"key2" 	 => "PERFORMANCE LAST 24 HOURS",
-			"value2" => $bitsoWallet->getPerformanceIntime(24).'%',			
+			"key" 	=> "CURRENT PERFORMANCE",
+			"value" => '$'. $bitsoWallet->getCurrentChange($currentBalance) .'%',
 		);
 
-		
 		$data_array[1] = array(
-			"key1" 	 => "AVG TRADES",
-			"value1" => $bitsoWallet->getAverageTrades(),			
-			"key2" 	 => "TOTAL WALLET BALANCE",
-			"value2" => '$'. number_format( $currentBalance, 2 ),
+			"key" 	=> "AVG TRADES",
+			"value" => $bitsoWallet->getAverageTrades(),			
+		);		
+
+		$data_array[2] = array(
+			"key" 	=> "PERFORMANCE LAST 36 HOURS",
+			"value" => $bitsoWallet->getPerformanceIntime(36).'%',
+		);
+
+		$data_array[3] = array(
+			"key" 	=> "TOTAL WALLET BALANCE",
+			"value" => '$'. number_format( $currentBalance, 2 ),
+		);
+
+		$data_array[4] = array(
+			"key" 	=> "OLDEST BUY",
+			"value" => $bitsoWallet->getOldestBuy(),
 		);		
 		
 		echo json_encode($data_array);

@@ -27,6 +27,22 @@ class BitsoWallet extends Bitso
 		return $last_balance;
 	}
 
+	public function getCurrentChange($current_balance)
+	{
+		$mysql = new MySQL();
+		$query = "SELECT * FROM wallet_performance ORDER BY id DESC LIMIT 1";
+		$data  = $mysql->mySQLquery($query);
+
+		if(!empty($data)){
+			$last_price = $data[0]->amount;
+		
+			$change = (($current_balance - $last_price) / $current_balance) * 100;
+			$change = number_format($change, 2);
+
+			return $change;
+		}
+	}
+
 	public function getAverageTrades()
 	{
 		$mysql = new MySQL();
@@ -45,23 +61,7 @@ class BitsoWallet extends Bitso
 		$result = $mysql->mySQLquery($query);
 
 		return number_format($result[0]->performance, 2);
-	}
-
-	public function getCurrentChange($current_balance)
-	{
-		$mysql = new MySQL();
-		$query = "SELECT * FROM wallet_performance ORDER BY id DESC LIMIT 1";
-		$data  = $mysql->mySQLquery($query);
-
-		if(!empty($data)){
-			$last_price = $data[0]->amount;
-		
-			$change = (($current_balance - $last_price) / $current_balance) * 100;
-			$change = number_format($change, 2);
-
-			return $change;
-		}
-	}
+	}		
 
 	public function getLatestCurrencySell($book)
 	{
@@ -73,6 +73,17 @@ class BitsoWallet extends Bitso
 			return $data[0]->price;
 		}
 
+	}
+
+	public function getOldestBuy(){
+		$mysql = new MySQL();
+		$query = "SELECT *, TIMESTAMPDIFF(HOUR, date, now()) as elapsed FROM wallet_balance a 
+				  JOIN wallet_currencys b ON a.book = b.book ORDER by date ASC LIMIT 1";
+		$data  = $mysql->mySQLquery($query);
+
+		$text  = $this->convertTimeToText($data[0]->elapsed);
+
+		return $text;
 	}
 
 	public function getMinimunMaximun($book)
@@ -118,7 +129,6 @@ class BitsoWallet extends Bitso
 
 			}
 		}
-
 
 		return $balanceValue;
 
@@ -174,6 +184,15 @@ class BitsoWallet extends Bitso
 	/* 
 	FOR DEBUG
 	*/
+
+	protected function convertTimeToText($time)
+	{
+		$days   = ($time/24);
+		$hours  = ($time%24);
+		$string = number_format($days,0) ." days ". $hours ." hours ago"; 
+
+		return $string;
+	}
 
 	public function openLogfile()
 	{
