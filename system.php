@@ -94,10 +94,6 @@ if (!$_SESSION) {
 								}
 							}
 
-							$balances = $bitsoWallet->getWalletBalances();
-
-							var_dump($balances);
-
 							?>							
 							
 						</table>
