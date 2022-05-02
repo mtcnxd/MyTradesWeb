@@ -101,6 +101,14 @@ switch($request){
 		echo json_encode($result);
 
 	break;
+	
+	case 'history':
+		$result = $bitsoWallet->getBalanceHistory();
+
+		echo json_encode($result);
+
+	break;
+	
 
 }
 

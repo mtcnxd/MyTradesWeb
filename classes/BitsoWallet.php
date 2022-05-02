@@ -161,9 +161,18 @@ class BitsoWallet extends Bitso
 		return $result;
 	}
 
+	public function getBalanceHistory($limit = 36)
+	{
+		$mysql = new MySQL();
+		$query = "SELECT * FROM wallet_performance ORDER BY date DESC LIMIT $limit";
+		$result = $mysql->mySQLquery($query);
+		
+		return $result;
+	}
+
 	public function sendWebHook($event) 
 	{
-		$url = "https://maker.ifttt.com/trigger/".$event."/with/key/b02sH9pYZV0xykH4H8K2wT";
+		$url = 'https://maker.ifttt.com/trigger/'.$event.'/with/key/b02sH9pYZV0xykH4H8K2wT';
 		
 		$values = ["value1" => "Hola", "value2" => "Nuevo", "value3" => "Mundo"];
 		$payload = json_encode($values);
