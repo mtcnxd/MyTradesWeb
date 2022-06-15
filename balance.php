@@ -43,6 +43,7 @@ if (!$_SESSION) {
 	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: '. $authHeader,'Content-Type: application/json'));
 	
 	$balance_result = curl_exec($ch);
+
 	$json_string    = json_decode($balance_result);
 	$balance_json   = $json_string->payload;
 	$balance_array = $balance_json->balances;

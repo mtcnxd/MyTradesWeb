@@ -10,7 +10,7 @@ use classes\MySQL;
 
 $bitsoKey 	 = "TMJEPCYmIv";
 $bitsoSecret = "d181cda5b0f939ee1b42e7b45ebd93e5";
-$nonce 		 = round(microtime(true) * 1000);
+$nonce 		 = (integer)round(microtime(true) * 10000 * 100);
 $HTTPMethod  = "GET";
 
 /*************************************************************/
