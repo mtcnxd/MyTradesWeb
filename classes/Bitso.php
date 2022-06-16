@@ -14,7 +14,7 @@ class Bitso {
 
 	protected function getBitsoRequest($url)
 	{
-		$nonce = round(microtime(true) * 1000);
+		$nonce = (integer)round(microtime(true) * 10000 * 100);
 		
 		// Create signature
 		$JSONPayload = "";
@@ -77,7 +77,6 @@ class Bitso {
 	public function getBalance()
 	{
 		$payload = $this->getBitsoRequest("/v3/balance/");
-
 		$json = json_decode($payload);
 		$balance = $json->payload;
 		$result = array();

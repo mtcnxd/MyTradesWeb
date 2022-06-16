@@ -27,10 +27,8 @@ $mysql   = new MySQL();
 $query   = "INSERT INTO wallet_performance(amount, difference) VALUES ('$currentBalance', '$walletChange')";
 $mysql->mySQLquery($query);
 
-
-
 /*
-	Almacena los datos para el analisis de compras
+Almacena los datos para el analisis de compras
 */
 
 $favorits = ['btc_mxn','bch_mxn','ltc_mxn','mana_mxn','bat_mxn','eth_mxn'];

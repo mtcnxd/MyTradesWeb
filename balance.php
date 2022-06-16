@@ -1,6 +1,9 @@
 <?php
 session_start();
 require_once ('classes/functions.php'); 
+require_once ('classes/BitsoWallet.php'); 
+
+use classes\BitsoWallet;
 
 if (!$_SESSION) {
 	header('Location:index.php');
@@ -24,39 +27,7 @@ if (!$_SESSION) {
 				crossorigin="anonymous">
 		</script>	
 	</head>
-	
-	<?php
-	
-	// Create signature
-	$JSONPayload = "";
-	$message = $nonce . $HTTPMethod ."/v3/balance/". $JSONPayload;
-	$signature = hash_hmac('sha256', $message, $bitsoSecret);
-	
-	// Build the auth header
-	$format = 'Bitso %s:%s:%s';
-	$authHeader =  sprintf($format, $bitsoKey, $nonce, $signature);	 
-	
-	// Send request
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, 'https://api.bitso.com/v3/balance/');
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, "true");
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: '. $authHeader,'Content-Type: application/json'));
-	
-	$balance_result = curl_exec($ch);
-
-	$json_string    = json_decode($balance_result);
-	$balance_json   = $json_string->payload;
-	$balance_array = $balance_json->balances;
-	
-	curl_setopt($ch, CURLOPT_URL, 'https://api.bitso.com/v3/ticker/');
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, "true");
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: ' . $authHeader,'Content-Type: application/json'));
-	
-	$ticker_result = curl_exec($ch);
-	$ticker_json = json_decode($ticker_result);
-	$ticker_array = $ticker_json->payload;
-	?>
-	
+		
 	<body>
 		<header class="p-3 mb-3 border-bottom border-custom bg-white shadow-sm">
 			<div class="container">
@@ -101,10 +72,14 @@ if (!$_SESSION) {
 						$chart_data    = array();							
 						$ticker_currencys = array();
 						$balance_mxn   = array();
-						
-						foreach ($ticker_array as $ticker){
-							if( strpos($ticker->book, "_mxn") or strpos($ticker->book, "_usd") ){
-								$ticker_currencys[$ticker->book] = $ticker->last;
+
+						$bitsoWallet = new BitsoWallet();
+						$balance_array = $bitsoWallet->getBalance();
+						$ticker_array = $bitsoWallet->getTicker();
+
+						foreach ($ticker_array as $book => $ticker){
+							if( strpos($book, "_mxn") or strpos($book, "_usd") ){
+								$ticker_currencys[$book] = $ticker;
 							}
 						}
 						
