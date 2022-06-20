@@ -1,7 +1,9 @@
 <?php
 session_start();
 require_once ('classes/functions.php'); 
+require_once ('classes/BitsoWallet.php'); 
 
+use classes\BitsoWallet;
 use classes\MySQL;
 
 if (!$_SESSION) {
@@ -130,8 +132,6 @@ if (!$_SESSION) {
 								$t_gain_lost += $gain_lost;
 							}
 
-				    		$min = select_min();
-							$max = select_max();
 							?>
 							<tr>
 								<td>&nbsp;</td>
@@ -164,7 +164,10 @@ if (!$_SESSION) {
 							$data = $mysql->mySQLquery($query);
 							foreach ($data as $key => $chart) {
 								$chart_data[$chart->date] = $chart->amount;
-							} 
+							}
+
+				    		$min = select_min();
+							$max = select_max();
 							?>					
 							<canvas class="p-3" id="myChart" width="250" height="100"></canvas>
 						</div>
@@ -179,10 +182,10 @@ if (!$_SESSION) {
 									<div class="align-items-center row">
 										<div class="col">
 									    	<h6 class="card-title text-muted text-uppercase fs-7">
-									    		<?="Less investment: ". $min[0]->book;?>
+									    		<?="Less investment: ". $min->book;?>
 									    	</h6>
 									    	<h5 class="card-subtitle mb-2 fs-6">
-									    		<?=convertMoney($min[0]->value);?>
+									    		<?=convertMoney($min->value);?>
 									    	</h5>
 								    	</div>
 								    	<div class="col-auto">
@@ -199,10 +202,10 @@ if (!$_SESSION) {
 									<div class="align-items-center row">
 										<div class="col">
 									    	<h6 class="card-title text-muted text-uppercase fs-7">
-									    		<?="More investment: ". $max[0]->book;?>
+									    		<?="More investment: ". $max->book;?>
 									    	</h6>
 									    	<h5 class="card-subtitle mb-2 fs-6">
-									    		<?=convertMoney($max[0]->value);?>
+									    		<?=convertMoney($max->value);?>
 									    	</h5>
 								    	</div>
 								    	<div class="col-auto">
@@ -342,22 +345,23 @@ const myChart = new Chart(ctx, {
             backgroundColor: 'rgba(252, 186, 3, 0.2)',
             borderColor: 'rgba(252, 186, 3, 1)',
             borderWidth: 1,
-            hoverOffset: 5
+            hoverOffset: 1,
+            tension: 0.4
        }]
     },
     options: {
 		responsive: true,
     	plugins: {
-      	legend: {
-        	position: 'none',
-        	align:'center',
-        	labels:{
-        		padding:25,
-        		boxWidth: 18,
-        		boxHeight: 17
-        	}
+	      	legend: {
+	        	position: 'none',
+	        	align:'center',
+	        	labels:{
+	        		padding:25,
+	        		boxWidth: 18,
+	        		boxHeight: 17
+	        	}
+	      	}
       	}
-      }
     }
 });
 </script>

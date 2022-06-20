@@ -67,7 +67,6 @@ if (!$_SESSION) {
 						<table class="table table-borderless table-hover fs-6">
 							<thead>
 								<tr class="table-custom text-uppercase fs-7">
-									<th scope="col"></th>
 									<th scope="col">Book</th>
 									<th scope="col" class="text-end">Last buy price</th>
 									<th scope="col" class="text-end">Current Price</th>
@@ -75,6 +74,7 @@ if (!$_SESSION) {
 									<th scope="col" class="text-end">Low Price</th>
 									<th scope="col" class="text-end">Change (24h)</th>
 									<th scope="col" class="text-end">Minimun (24h)</th>
+									<th scope="col" class="text-end">Volume (24h)</th>
 								</tr>
 							</thead>
 
@@ -83,7 +83,7 @@ if (!$_SESSION) {
 							$bitsoWallet = new BitsoWallet();
 							$bitsoTicker = $bitsoWallet->getFullTicker();
 
-							$favorits 	 = ['btc_mxn','bch_mxn','ltc_mxn','mana_mxn','bat_mxn','eth_mxn'];
+							$favorits 	 = ['btc_mxn','bch_mxn','ltc_mxn','mana_mxn','eth_mxn'];
 
 							foreach ($bitsoTicker as $key => $value) {
 
@@ -101,7 +101,6 @@ if (!$_SESSION) {
 									$row_up = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00aa00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg></td>';
 
 									echo "<tr>";
-									echo 	"<td></td>";
 									echo 	"<td>". $key ."</td>";
 									echo 	"<td class='text-end'>". convertMoney( $last_buy_price ) ."</td>";
 									echo 	"<td class='text-end'>". convertMoney( $value['last'] ) ."</td>";
@@ -117,6 +116,7 @@ if (!$_SESSION) {
 									echo 	"<td class='text-end text-success'>". number_format( $calc_entry,2 ) ."% </td>";
 									}
 									echo 	"<td class='text-end'>". convertMoney($change_24->minimum) ."</td>";
+									echo 	"<td class='text-end'>". convertMoney($change_24->volume) ."</td>";
 									echo "</tr>";									
 
 								}

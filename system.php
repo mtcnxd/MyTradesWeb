@@ -1,8 +1,10 @@
 <?php
 session_start();
+require_once ('classes/functions.php'); 
 require_once ('classes/BitsoWallet.php'); 
 
 use classes\BitsoWallet;
+use classes\MySQL;
 
 if (!$_SESSION) {
 	header('Location:index.php');
@@ -93,7 +95,6 @@ if (!$_SESSION) {
 									$i++;
 								}
 							}
-
 							?>							
 							
 						</table>

@@ -6,19 +6,6 @@ use classes\MySQL;
 
 /****************** BLOQUE DE FUNCIONES **********************/
 
-function create_curl($curl_url, $authHeader)
-{
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $curl_url);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, "true");
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: '. $authHeader,'Content-Type: application/json'));
-	
-	$balance_result = curl_exec($ch);
-	$json_string    = json_decode($balance_result);
-	$orders_json    = $json_string->payload;		
-	return $orders_json;
-}
-
 function showHtmlRow($gain_lost, $bought, $current)
 {
 	if ($current!= 0){
@@ -93,20 +80,20 @@ function select_oldest_buy()
 	return $data; 
 }
 
-function select_max()
-{
-	$mysql = new MySQL();	
-	$query = "SELECT book, SUM(price * amount) as value FROM wallet_balance GROUP BY book ORDER by value DESC LIMIT 1";
-	$data  = $mysql->mySQLquery($query);
-	return $data;
-}
-
 function select_min()
 {
 	$mysql = new MySQL();
 	$query = "SELECT book, SUM(price * amount) as value FROM wallet_balance GROUP BY book ORDER by value ASC LIMIT 1";
 	$data  = $mysql->mySQLquery($query);
-	return $data;
+	return $data[0];
+}
+
+function select_max()
+{
+	$mysql = new MySQL();	
+	$query = "SELECT book, SUM(price * amount) as value FROM wallet_balance GROUP BY book ORDER by value DESC LIMIT 1";
+	$data  = $mysql->mySQLquery($query);
+	return $data[0];
 }
 
 function getCurrentChange($current_price)
