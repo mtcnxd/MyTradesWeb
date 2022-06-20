@@ -4,20 +4,7 @@ require_once('mySQL.php');
 
 use classes\MySQL;
 
-/*************************************************************/
-/****************** DEFINICION DE VARIABLES ******************/
-/*************************************************************/
-
-/*
-$bitsoKey 	 = "TMJEPCYmIv";
-$bitsoSecret = "d181cda5b0f939ee1b42e7b45ebd93e5";
-$nonce 		 = (integer)round(microtime(true) * 10000 * 100);
-$HTTPMethod  = "GET";
-*/
-
-/*************************************************************/
 /****************** BLOQUE DE FUNCIONES **********************/
-/*************************************************************/
 
 function create_curl($curl_url, $authHeader)
 {

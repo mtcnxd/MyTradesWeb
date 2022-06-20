@@ -134,6 +134,7 @@ class BitsoWallet extends Bitso
 
 	}
 
+
 	/*
 	ONLY API LEVEL
 	*/

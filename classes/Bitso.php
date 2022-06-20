@@ -117,6 +117,24 @@ class Bitso {
 		return $balance_mxn;
 
 	}
+
+	public function getOpenOrders()
+	{
+		$payload = $this->getBitsoRequest("/v3/open_orders/");
+
+		$json = json_decode($payload);
+		$orders = $json->payload;
+		return $orders;
+	}
+
+	public function getUserTrades()
+	{
+		$payload = $this->getBitsoRequest("/v3/user_trades/");
+
+		$json = json_decode($payload);
+		$trades = $json->payload;
+		return $trades;
+	}
 	
 
 }

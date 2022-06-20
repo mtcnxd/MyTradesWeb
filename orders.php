@@ -1,6 +1,9 @@
 <?php
 session_start();
 require_once ('classes/functions.php'); 
+require_once ('classes/BitsoWallet.php'); 
+
+use classes\BitsoWallet;
 
 if (!$_SESSION) {
 	header('Location:index.php');
@@ -26,21 +29,11 @@ if (!$_SESSION) {
 	</head>
 	
 	<?php
-	
-	$JSONPayload = "";
-	$format = 'Bitso %s:%s:%s';	
-	
-	$message = $nonce . $HTTPMethod ."/v3/open_orders/". $JSONPayload;
-	$signature = hash_hmac('sha256', $message, $bitsoSecret);
-	
-	$authHeader =  sprintf($format, $bitsoKey, $nonce, $signature);
-	$orders_json = create_curl('https://api.bitso.com/v3/open_orders/', $authHeader);
-	
-	$message = $nonce +200 . $HTTPMethod ."/v3/user_trades/". $JSONPayload;
-	$signature = hash_hmac('sha256', $message, $bitsoSecret);
-	
-	$authHeader =  sprintf($format, $bitsoKey, $nonce +200, $signature);
-	$trades_json = create_curl('https://api.bitso.com/v3/user_trades/', $authHeader);
+
+	$bitsoWallet = new BitsoWallet();
+	$orders = $bitsoWallet->getOpenOrders();
+	$trades = $bitsoWallet->getUserTrades();
+
 	?>
 	
 	<body>
@@ -93,7 +86,7 @@ if (!$_SESSION) {
 							</thead>
 
 							<?php		
-							foreach($orders_json as $number => $row){
+							foreach($orders as $number => $row){
 								echo "<tr>";								
 								echo "<td>". ($number + 1) ."</td>";
 								echo "<td>". $row->original_amount ."</td>";							
@@ -164,7 +157,7 @@ if (!$_SESSION) {
 							</thead>
 							
 							<?php					
-							foreach($trades_json as $cell=>$row){
+							foreach($trades as $cell => $row){
 								$today  = new DateTime(date('d-m-Y'));
 								$date   = new DateTime($row->created_at);
 								$amount = ($row->major - $row->fees_amount);
