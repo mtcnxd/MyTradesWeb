@@ -72,9 +72,9 @@ if (!$_SESSION) {
 									<th scope="col" class="text-end">Current Price</th>
 									<th scope="col" class="text-end">Change</th>									
 									<th scope="col" class="text-end">Low Price</th>
+									<th scope="col" class="text-end">Last volume</th>
 									<th scope="col" class="text-end">Change (24h)</th>
 									<th scope="col" class="text-end">Minimun (24h)</th>
-									<th scope="col" class="text-end">Volume (24h)</th>
 								</tr>
 							</thead>
 
@@ -101,22 +101,22 @@ if (!$_SESSION) {
 									$row_up = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00aa00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg></td>';
 
 									echo "<tr>";
-									echo 	"<td>". $key ."</td>";
+									echo 	"<td><a href='?book=$key'>". $key ."</a></td>";
 									echo 	"<td class='text-end'>". convertMoney( $last_buy_price ) ."</td>";
 									echo 	"<td class='text-end'>". convertMoney( $value['last'] ) ."</td>";
 									if ($change_percent < 0){
 									echo 	"<td class='text-end text-danger'>". $change_percent .'%'. $row_down;
 									} else {
 									echo 	"<td class='text-end text-success'>". $change_percent .'%'. $row_up;
-									}									
+									}
 									echo 	"<td class='text-end'>". convertMoney( $value['low'] ) ."</td>";
+									echo 	"<td class='text-end'>". convertMoney($change_24->volume) ."</td>";
 									if ($calc_entry < 0){
 									echo 	"<td class='text-end text-danger'>". number_format( $calc_entry,2 ) ."% </td>";
 									} else {
 									echo 	"<td class='text-end text-success'>". number_format( $calc_entry,2 ) ."% </td>";
 									}
 									echo 	"<td class='text-end'>". convertMoney($change_24->minimum) ."</td>";
-									echo 	"<td class='text-end'>". convertMoney($change_24->volume) ."</td>";
 									echo "</tr>";									
 
 								}
@@ -125,15 +125,121 @@ if (!$_SESSION) {
 							?>
 						</table>
 					</div>	<!-- Table-responsive -->
-
 				</div>	<!-- Card -->
+			</div>	<!-- Col-12 -->	
 
-			</div>	<!-- Col-12 -->			
+
+			<div class="row">
+				<div class="col">
+					<div class="card border border-custom shadow-sm rounded mb-4">
+						<div class="card-header">
+							<h6 class="card-header-title">Price</h6>
+							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+						</div>
+						<div class="card-body">
+							<canvas class="p-3" id="priceChart" width="250" height="100"></canvas>							
+						</div>
+					</div>
+				</div>
+
+				<div class="col">
+					<div class="card border border-custom shadow-sm rounded mb-4">
+						<div class="card-header">
+							<h6 class="card-header-title">Volume</h6>
+							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+						</div>
+						<div class="card-body">
+							<canvas class="p-3" id="volumeChart" width="250" height="100"></canvas>							
+						</div>
+					</div>
+				</div>
+			</div> <!-- row -->
 					
 		</div> 	<!-- Container -->
-		
 	</body>
 </html>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+<script>
+
+<?
+if($_GET)
+	$book = $_GET['book'];
+else
+	$book = 'btc_mxn';
+
+$priceData = $bitsoWallet->getChartMarketData($book);
+foreach ($priceData as $key => $prices) {
+	$priceArray[$key]  = $prices->price;
+	$volumeArray[$key] = $prices->volume;
+	$dateArray[$key]   = $prices->date;
+}
+?>
+
+const priceDiv = document.getElementById('priceChart').getContext('2d');
+const priceChart = new Chart(priceDiv, {
+    type: 'line',
+    data: {
+        labels: <? echo json_encode($dateArray); ?>,
+        datasets: [{
+            label: 'Wallet Balance',
+            data: <? echo json_encode($priceArray); ?>,
+            fill: true,
+            backgroundColor: 'rgba(252, 186, 3, 0.2)',
+            borderColor: 'rgba(252, 186, 3, 1)',
+            borderWidth: 1,
+            hoverOffset: 1,
+            tension: 0.4
+       }]
+    },
+    options: {
+		responsive: true,
+    	plugins: {
+	      	legend: {
+	        	position: 'none',
+	        	align:'center',
+	        	labels:{
+	        		padding:25,
+	        		boxWidth: 18,
+	        		boxHeight: 17
+	        	}
+	      	}
+      	}
+    }
+});
+
+const volumeDiv = document.getElementById('volumeChart').getContext('2d');
+const volumeChart = new Chart(volumeDiv, {
+    type: 'line',
+    data: {
+        labels: <? echo json_encode($dateArray); ?>,
+        datasets: [{
+            label: 'Volume Chart',
+            data: <? echo json_encode($volumeArray); ?>,
+            fill: true,
+            backgroundColor: 'rgba(128, 247, 104, 0.2)',
+            borderColor: 'rgba(128, 247, 104, 1)',
+            borderWidth: 1,
+            hoverOffset: 1,
+            tension: 0.4
+       }]
+    },
+    options: {
+		responsive: true,
+    	plugins: {
+	      	legend: {
+	        	position: 'none',
+	        	align:'center',
+	        	labels:{
+	        		padding:25,
+	        		boxWidth: 18,
+	        		boxHeight: 17
+	        	}
+	      	}
+      	}
+    }
+});
+</script>

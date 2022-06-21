@@ -139,6 +139,16 @@ class BitsoWallet extends Bitso
 	ONLY API LEVEL
 	*/
 
+	public function getChartMarketData($book = 'btc_mxn')
+	{
+		$mysql = new MySQL();
+		$query = "select id, price, volume, date_format(date, '%H:%i') as date from (
+					SELECT * FROM wallet_analytics WHERE book = '$book' ORDER by date desc limit 24
+				) tbl order by id asc";
+		$result = $mysql->mySQLquery($query);
+		return $result;
+	}
+
 	public function getChartData($limit = 24)
 	{
 		$mysql = new MySQL();
@@ -146,7 +156,6 @@ class BitsoWallet extends Bitso
 					SELECT date, amount, difference 
 					FROM wallet_performance ORDER BY date DESC LIMIT $limit) tbl ORDER BY date";
 		$result = $mysql->mySQLquery($query);
-		
 		return $result;
 	}
 
@@ -158,7 +167,6 @@ class BitsoWallet extends Bitso
 				  ORDER BY a.date DESC";
 
 		$result = $mysql->mySQLquery($query);
-		
 		return $result;
 	}
 
@@ -167,7 +175,6 @@ class BitsoWallet extends Bitso
 		$mysql = new MySQL();
 		$query = "SELECT * FROM wallet_performance ORDER BY date DESC LIMIT $limit";
 		$result = $mysql->mySQLquery($query);
-		
 		return $result;
 	}
 

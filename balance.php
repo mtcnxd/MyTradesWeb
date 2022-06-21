@@ -56,9 +56,9 @@ if (!$_SESSION) {
 		</header>		
 		
 		<div class="container">
-			<div class="row mb-4">
+			<div class="row">
 				<div class="col">
-					<div class="card rounded border border-custom shadow-sm">
+					<div class="card rounded border border-custom shadow-sm mb-4">
 						<div class="card-header">
 							<h6 class="card-header-title">Balances</h6>
 							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
@@ -144,68 +144,7 @@ if (!$_SESSION) {
 						$buy_power = ($buy_power/$value_total) * 100;
 						?>
 						</ul>
-					</div>	<!-- Card -->	
-				</div>	<!-- col -->		
-			
-				<div class="col">
-					<div class="row">
-						<div class="col-md-12">
-							<div class="card border border-custom shadow-sm rounded mb-4">
-								<div class="card-header">
-									<h6 class="card-header-title">Graphic</h6>
-									<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
-								</div>
-								<div class="card-body">
-									<canvas class="p-3" id="myChart" width="250" height="100"></canvas>							
-								</div>
-							</div>
-						</div>	<!-- col -->
-					</div> <!-- row -->
-
-
-					<div class="row">
-						<div class="col-md-6">
-							<div class="card border-custom shadow-sm mb-4">
-								<div class="card-body">
-									<div class="align-items-center row">
-										<div class="col">
-											<h6 class="card-title text-muted text-uppercase fs-7">
-												Current performance
-											</h6>
-											<h5 class="card-subtitle mb-2 fs-6">
-												<?=getCurrentChange($value_total) .'%';?>
-											</h5>			
-										</div>
-										<div class="col-auto">					
-											<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-percent"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
-										</div>
-									</div>
-								</div>								
-							</div>
-						</div>
-
-						<div class="col-md-6">
-							<div class="card border-custom shadow-sm mb-4">
-								<div class="card-body">
-									<div class="align-items-center row">
-										<div class="col">
-											<h6 class="card-title text-muted text-uppercase fs-7">
-												Performance last 36 hours
-											</h6>
-											<h5 class="card-subtitle mb-2 fs-6">
-												<?=getPerformanceIntime(36) .'%';?>
-											</h5>			
-										</div>
-										<div class="col-auto">					
-											<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-percent"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
-										</div>
-									</div>
-								</div>								
-							</div>
-						</div>
-						
-					</div>	<!-- row -->
-
+					</div>	<!-- Card -->
 
 					<div class="row">
 						<div class="col-md-6">
@@ -250,16 +189,76 @@ if (!$_SESSION) {
 					</div>	<!-- row -->
 
 					<div class="row">
+						<div class="col-md-6">
+							<div class="card border-custom shadow-sm mb-4">
+								<div class="card-body">
+									<div class="align-items-center row">
+										<div class="col">
+											<h6 class="card-title text-muted text-uppercase fs-7">
+												Current performance
+											</h6>
+											<h5 class="card-subtitle mb-2 fs-6">
+												<?=getCurrentChange($value_total) .'%';?>
+											</h5>			
+										</div>
+										<div class="col-auto">					
+											<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-percent"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
+										</div>
+									</div>
+								</div>								
+							</div>
+						</div>
+
+						<div class="col-md-6">
+							<div class="card border-custom shadow-sm mb-4">
+								<div class="card-body">
+									<div class="align-items-center row">
+										<div class="col">
+											<h6 class="card-title text-muted text-uppercase fs-7">
+												Performance last 24 hours
+											</h6>
+											<h5 class="card-subtitle mb-2 fs-6">
+												<?=getPerformanceIntime(24) .'%';?>
+											</h5>			
+										</div>
+										<div class="col-auto">					
+											<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-percent"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
+										</div>
+									</div>
+								</div>								
+							</div>
+						</div>
+					</div>	<!-- row -->
+				</div>	<!-- col -->
+
+			
+				<div class="col">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="card border border-custom shadow-sm rounded mb-4">
+								<div class="card-header">
+									<h6 class="card-header-title">Graphic</h6>
+									<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+								</div>
+								<div class="card-body">
+									<canvas class="p-3" id="myChart" width="250" height="100"></canvas>							
+								</div>
+							</div>
+						</div>	<!-- col -->
+					</div> <!-- row -->
+
+
+					<div class="row">
 						<div class="col">
 							<div class="card border border-custom shadow-sm rounded mb-4">
 								<div class="card-header">
-									<h6 class="card-header-title">History performance</h6>
+									<h6 class="card-header-title">History balance last 24 hours</h6>
 									<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
 								</div>
 
 								<div class="card-body">
 									<?php
-									$result = getHistory();
+									$result = getHistory(24);
 
 									echo "<table class='table table-hover'>";
 									foreach($result as $key => $value){
@@ -278,7 +277,6 @@ if (!$_SESSION) {
 							</div>				
 						</div>
 					</div> <!-- row -->
-
 				</div>	<!-- col -->
 			</div>	<!-- row -->
 
