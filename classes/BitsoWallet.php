@@ -106,10 +106,16 @@ class BitsoWallet extends Bitso
 
 		$balanceValue = array();
 		foreach ($balances as $key => $value) {
+
 			$book = $value->currency.'_mxn';
 
-			if ($value->total > 0.002){
-
+			if ($value->currency == 'mxn'){
+				$balanceValue[] = [
+					'currency' => $value->currency,
+					'amount'   => $value->total,
+					'value'    => $value->total,
+				];
+			} else if ($value->total > 0.002){
 				if( array_key_exists($book, $ticker) ){
 					$balanceValue[] = [
 						'currency' => $value->currency,
@@ -122,18 +128,16 @@ class BitsoWallet extends Bitso
 						$balanceValue[] = [
 							'currency' => $value->currency,
 							'amount'   => $value->total,
-							'value' => $value->total * $ticker[$book] * $ticker['usd_mxn'],
+							'value'    => $value->total * $ticker[$book] * $ticker['usd_mxn'],
 						];
 					}
-				}				
-
+				}
 			}
 		}
 
 		return $balanceValue;
 
 	}
-
 
 	/*
 	ONLY API LEVEL
@@ -165,25 +169,20 @@ class BitsoWallet extends Bitso
 		$query = "SELECT a.id, a.book, a.price, date_format(a.date, '%d/%m/%Y') as date, b.currency 
 				  FROM wallet_balance a JOIN wallet_currencys b ON a.book = b.book WHERE a.status = 1 
 				  ORDER BY a.date DESC";
-
-		$result = $mysql->mySQLquery($query);
-		return $result;
+		return $mysql->mySQLquery($query);
 	}
 
-	public function getBalanceHistory($limit = 36)
+	public function getBalanceHistory($limit = 12)
 	{
 		$mysql = new MySQL();
 		$query = "SELECT * FROM wallet_performance ORDER BY date DESC LIMIT $limit";
-		$result = $mysql->mySQLquery($query);
-		return $result;
+		return $mysql->mySQLquery($query);
 	}
 
-	public function sendWebHook($event) 
+	public function sendWebHook($event, $data) 
 	{
-		$url = 'https://maker.ifttt.com/trigger/'.$event.'/with/key/b02sH9pYZV0xykH4H8K2wT';
-		
-		$values = ["value1" => "Hola", "value2" => "Nuevo", "value3" => "Mundo"];
-		$payload = json_encode($values);
+		$url = 'https://maker.ifttt.com/trigger/'.$event.'/with/key/b02sH9pYZV0xykH4H8K2wT';		
+		$payload = json_encode($data);
 
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $payload );
@@ -196,7 +195,6 @@ class BitsoWallet extends Bitso
 		return $response;
 
 	}
-
 
 	/* 
 	FOR DEBUG

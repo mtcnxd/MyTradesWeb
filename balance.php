@@ -68,77 +68,28 @@ if (!$_SESSION) {
 						<?php
 						$value_total   = 0;
 						$buy_power     = 0;
-						$buy_power_mxn = 0;
-						$chart_data    = array();							
-						$ticker_currencys = array();
-						$balance_mxn   = array();
+						$chart_data    = array();
 
 						$bitsoWallet = new BitsoWallet();
-						$balance_array = $bitsoWallet->getBalance();
-						$ticker_array = $bitsoWallet->getTicker();
-
-						foreach ($ticker_array as $book => $ticker){
-							if( strpos($book, "_mxn") or strpos($book, "_usd") ){
-								$ticker_currencys[$book] = $ticker;
-							}
-						}
+						$balance_array = $bitsoWallet->getWalletBalances();
 						
 						foreach ($balance_array as $balance){
-							if ($balance->total > 0.0002){
-								echo "<li class='list-group-item list-group-item-action'>";
-								if ($balance->currency == 'mxn'){
-									$value_total += $balance->total;
-									$balance_mxn[$balance->currency] = $balance->total;
-									$buy_power = $balance->total;
-									$buy_power_mxn = $balance->total;
-									
-									echo "<div class='ms-2'>
-		  								  	<div class='fw-bold text-uppercase'>". $balance->currency ."</div>
-	      									<div class='row'>
-	      										<div class='col-md-6'>". $balance->total ."</div>
-	      										<div class='col-md-6 text-end'>". convertMoney($balance->total) ."</div>
-	      									</div> 
-										  </div>";										
-								} else {
-									$book = $balance->currency ."_mxn";
-									if (array_key_exists($book, $ticker_currencys)){
-										$total_usd = $balance->total * $ticker_currencys['usd_mxn'];
-										$total_mxn = $ticker_currencys[$book] * $balance->total;
-										$balance_mxn[$balance->currency] = $total_mxn;
-										$chart_data[$balance->currency]  = $total_mxn;
-										$value_total += $total_mxn;
-										
-										if ($balance->currency == 'usd')
-											$buy_power += $total_mxn;
-											$buy_power_mxn += $total_mxn;
-										
-										echo "<div class='ms-2'>
-		  								  	<div class='fw-bold text-uppercase'>". $balance->currency ."</div>
-	      									<div class='row'>
-	      										<div class='col-md-6'>". $balance->total ."</div>
-	      										<div class='col-md-6 text-end'>". convertMoney($total_mxn) ."</div>
-	      									</div> 
-										  </div>";		
-										
-									} else {
-										$book = $balance->currency ."_usd";
-										$total_usd = $ticker_currencys[$book] * $balance->total;
-										$total_mxn = $total_usd * $ticker_currencys['usd_mxn'];
-										$balance_mxn[$balance->currency] = $total_mxn;
-										$chart_data[$balance->currency]  = $total_mxn;											
-										$value_total += $total_mxn;
-										
-										echo "<div class='ms-2'>
-		  								  	<div class='fw-bold text-uppercase'>". $balance->currency ."</div>
-	      									<div class='row'>
-	      										<div class='col-md-6'>". $balance->total ."</div>
-	      										<div class='col-md-6 text-end'>". convertMoney($total_mxn) ."</div>
-	      									</div> 
-										  </div>";		
-									}
-								}	
-								echo "</li>";
-							}
+							$chart_data[$balance['currency']] = $balance['value'];
+							$value_total += $balance['value'];
+
+							if ($balance['currency'] == 'usd'){
+								$buy_power = $balance['value'];
+							} 
+
+							echo "<li class='list-group-item list-group-item-action'>";
+							echo "	<div class='ms-2'>
+								  		<div class='fw-bold text-uppercase'>". $balance['currency'] ."</div>
+										<div class='row'>
+											<div class='col-md-6'>". $balance['amount'] ."</div>
+											<div class='col-md-6 text-end'>". convertMoney($balance['value']) ."</div>
+										</div> 
+							  		</div>";
+							echo "</li>";
 						}
 						
 						$buy_power = ($buy_power/$value_total) * 100;
@@ -156,7 +107,7 @@ if (!$_SESSION) {
 												Buying power <?=" (".number_format($buy_power,2) ."%)";?>
 											</h6>
 											<h5 class="card-subtitle mb-2 fs-6">
-												<?=convertMoney($buy_power_mxn);?>
+												<?=convertMoney($buy_power);?>
 											</h5>			
 										</div>
 										<div class="col-auto">					
@@ -258,7 +209,7 @@ if (!$_SESSION) {
 
 								<div class="card-body">
 									<?php
-									$result = getHistory(24);
+									$result = $bitsoWallet->getBalanceHistory(24);
 
 									echo "<table class='table table-hover'>";
 									foreach($result as $key => $value){

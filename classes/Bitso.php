@@ -16,12 +16,10 @@ class Bitso {
 	{
 		$nonce = (integer)round(microtime(true) * 10000 * 100);
 		
-		// Create signature
 		$JSONPayload = "";
 		$message = $nonce . $this->HTTPMethod.$url.$JSONPayload;
 		$signature = hash_hmac('sha256', $message, $this->bitsoSecret);
 		
-		// Build the auth header
 		$format = 'Bitso %s:%s:%s';
 		$authHeader =  sprintf($format, $this->bitsoKey, $nonce, $signature);	 
 

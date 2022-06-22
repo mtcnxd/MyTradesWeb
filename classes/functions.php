@@ -137,14 +137,6 @@ function getChange()
 
 }
 
-function getHistory($hours = 12)
-{
-	$mysql = new MySQL();
-	$query = "SELECT * FROM wallet_performance ORDER BY id DESC LIMIT $hours";
-	$result = $mysql->mySQLquery($query);
-
-	return $result;
-}
 
 function getPerformanceIntime($time_elapsed = 12)
 {
