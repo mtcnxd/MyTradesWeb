@@ -197,6 +197,21 @@ class BitsoWallet extends Bitso
 	}
 
 	/* 
+	FOR TRADE
+	*/
+
+	public function updateBuyingPower($data)
+	{
+		$mysql = new MySQL();
+		$query = "SELECT * FROM wallet_available where currency = 'mxn'";
+
+		if (!is_null( $mysql->mySQLquery($query) )) {
+			$mysql->mySQLupdate("wallet_available", $data, "currency = 'mxn'");
+		}
+
+	}
+
+	/* 
 	FOR DEBUG
 	*/
 

@@ -1,6 +1,77 @@
 <?php
 namespace classes;
 
+class DataBase
+{
+    public $table;
+    public $queryresult;
+
+    public function __construct()
+    {
+        return 'Conexion a la base de datos';
+    }
+
+    public function setTable($tbl)
+    {
+        $this->table = $tbl;
+    }
+
+
+    public function insert($data)
+    {
+        $query = "INSERT INTO ". $this->table;
+        $query .= " (". implode(', ', array_keys($data)) . ") VALUES (";
+        foreach($data as $values){
+            $value[] = "'". $values ."'";
+        }
+        $query .= implode (',',$value) .")";
+        
+        return $query;
+    }    
+
+    public function where($where)
+    {
+        $query = "SELECT * FROM ". $this->table;
+        $query .= ' WHERE ';
+        foreach ($where as $key => $value) {
+            $item_where[] = $key  ." = '". $value ."'";
+        }
+        $query .= implode (' AND ',$item_where);
+
+        return $query;
+    }
+
+    public function update($data, $where)
+    {
+        $query = 'UPDATE '. $this->table .' SET ';
+        $item = array();
+        foreach ($data as $key => $value) {
+            $item_update[] = $key  ." = '". $value ."'";
+        }
+        $query .= implode (', ',$item_update);
+        $query .= ' WHERE ';
+        foreach ($where as $key => $value) {
+            $item_where[] = $key  ." = '". $value ."'";
+        }
+        $query .= implode (', ',$item_where);
+        
+        return $query;
+    }
+
+    public function delete($where)
+    {
+        $query = "DELETE FROM ". $this->table;
+        $query .= ' WHERE ';
+        foreach ($where as $key => $value) {
+            $item_where[] = $key  ." = '". $value ."'";
+        }
+        $query .= implode (' AND ',$item_where);
+
+        return $query;
+    }
+
+}
+
 class MySQL {
 	protected $host 	= 'localhost';
 	protected $username = 'fortechm';
@@ -67,11 +138,17 @@ class MySQL {
 		$query  = "UPDATE ". $tbl ." SET ";
 		$item = array();
 		foreach ($data as $key => $value) {
-			$item[] = $key ." = ". $value;
+			$item[] = $key  ." = '". $value ."'";
 		}
 		$query .= implode (',',$item);
 		$query .= " WHERE " . $where; 
-		mysqli_query($query);
+
+		try {
+			mysqli_query($this->connect, $query);			
+		} catch(Exception $e) {
+			throw new Exception ('Error insertando registro');
+		}
+
 	}
 
 }

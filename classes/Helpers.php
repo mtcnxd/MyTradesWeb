@@ -4,23 +4,7 @@ namespace Helpers;
 
 class Helpers
 {
-    protected function select_min()
-    {
-        $mysql = new MySQL();
-        $query = "SELECT book, SUM(price * amount) as value FROM wallet_balance GROUP BY book ORDER by value ASC LIMIT 1";
-        $data  = $mysql->mySQLquery($query);
-        return $data[0];
-    }
-
-    protected function select_max()
-    {
-        $mysql = new MySQL();	
-        $query = "SELECT book, SUM(price * amount) as value FROM wallet_balance GROUP BY book ORDER by value DESC LIMIT 1";
-        $data  = $mysql->mySQLquery($query);
-        return $data[0];
-    }
-
-    public function sendWebHook($event, $data) 
+    static function sendWebHook($event, $data) 
     {
         $url = 'https://maker.ifttt.com/trigger/'.$event.'/with/key/b02sH9pYZV0xykH4H8K2wT';        
         $payload = json_encode($data);
@@ -35,5 +19,40 @@ class Helpers
 
         return $response;
 
+    }
+
+    static function extractCurrency($book)
+    {
+        return substr($book, 0, strpos($book, '_'));
+    }
+
+    static function convertMoney($number)
+    {
+        $money = number_format($number, 2);
+        return "$". $money;
+    }
+
+    static function time_elapsed($hours)
+    {
+        if ($hours/24 >= 1){
+            $string = number_format($hours/24) ." d";
+        } else {
+            $string = $hours ." h";
+        }
+        return $string;
+    }
+
+    static function time_elapsed_str($time)
+    {
+        $days   = ($time/24);
+        $hours  = ($time%24);
+
+        if ($days > 30){
+            $month  = $days/30;
+        }
+
+        $string = number_format($days,0) ." days ". $hours ." hours ago"; 
+
+        return $string;
     }
 }

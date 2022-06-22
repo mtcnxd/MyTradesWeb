@@ -96,15 +96,17 @@ if (!$_SESSION) {
 								}
 							}
 
+							$data = ['amount' => 3.5];
+							$bitsoWallet->updateBuyingPower($data);
+
 							?>							
 							
 						</table>
 					</div>	<!-- Table -->
 				</div>	<!-- Card -->
 			</div>	<!-- Col-12 -->
-
+		
 		</div> 	<!-- Container -->
-
 	</body>
 </html>
 

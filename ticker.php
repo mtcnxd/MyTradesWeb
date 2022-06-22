@@ -2,8 +2,10 @@
 session_start();
 require_once ('classes/functions.php'); 
 require_once ('classes/BitsoWallet.php'); 
+require_once ('classes/Helpers.php'); 
 
 use classes\BitsoWallet;
+use classes\Helpers;
 use classes\MySQL;
 
 if (!$_SESSION) {
