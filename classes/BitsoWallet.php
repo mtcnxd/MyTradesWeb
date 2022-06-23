@@ -139,6 +139,13 @@ class BitsoWallet extends Bitso
 
 	}
 
+	public function getLastBoughtPrices($book = 'btc_mxn')
+	{
+		$mysql = new MySQL();
+		$sql = "select * from wallet_balance where book = '$book' and status = 1 order by date desc limit 1";
+		return $mysql->mySQLquery($sql)[0];
+	}
+
 	/*
 	ONLY API LEVEL
 	*/

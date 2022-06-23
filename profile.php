@@ -1,8 +1,10 @@
 <?php
 session_start();
 require_once ('classes/functions.php');
+require_once ('classes/Helpers.php');
 
 use classes\MySQL;
+use classes\Helpers;
 
 if (!$_SESSION) {
 	header('Location:index.php');
@@ -70,7 +72,7 @@ foreach ($result as $key => $value) {
 					<div class="card rounded border border-custom shadow-sm">
 						<div class="card-header">
 							<h6 class="card-header-title">Profile</h6>
-							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M12 2.5a5.25 5.25 0 00-2.519 9.857 9.005 9.005 0 00-6.477 8.37.75.75 0 00.727.773H20.27a.75.75 0 00.727-.772 9.005 9.005 0 00-6.477-8.37A5.25 5.25 0 0012 2.5z"></path></svg>
 						</div>
 
 						<div class="p-4">
@@ -103,7 +105,7 @@ foreach ($result as $key => $value) {
 					<div class="card rounded border border-custom shadow-sm">
 						<div class="card-header">
 							<h6 class="card-header-title">Profile statistics</h6>
-							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M13 7.5a1 1 0 11-2 0 1 1 0 012 0zm-3 3.75a.75.75 0 01.75-.75h1.5a.75.75 0 01.75.75v4.25h.75a.75.75 0 010 1.5h-3a.75.75 0 010-1.5h.75V12h-.75a.75.75 0 01-.75-.75z"></path><path fill-rule="evenodd" d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11 11-4.925 11-11S18.075 1 12 1zM2.5 12a9.5 9.5 0 1119 0 9.5 9.5 0 01-19 0z"></path></svg>
 						</div>
 						<div class="card-body">
 							<ul class="list-group">
@@ -129,7 +131,7 @@ foreach ($result as $key => $value) {
 					<div class="card rounded border border-custom shadow-sm">
 						<div class="card-header">
 							<h6 class="card-header-title">Configuration</h6>
-							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M0 13C0 6.373 5.373 1 12 1s12 5.373 12 12v8.657a.75.75 0 01-1.5 0V13c0-5.799-4.701-10.5-10.5-10.5S1.5 7.201 1.5 13v8.657a.75.75 0 01-1.5 0V13z"></path><path d="M8 19.75a.75.75 0 01.75-.75h6.5a.75.75 0 010 1.5h-6.5a.75.75 0 01-.75-.75z"></path><path fill-rule="evenodd" d="M5.25 9.5a1.75 1.75 0 00-1.75 1.75v3.5c0 .966.784 1.75 1.75 1.75h13.5a1.75 1.75 0 001.75-1.75v-3.5a1.75 1.75 0 00-1.75-1.75H5.25zm.22 1.47a.75.75 0 011.06 0L9 13.44l2.47-2.47a.75.75 0 011.06 0L15 13.44l2.47-2.47a.75.75 0 111.06 1.06l-3 3a.75.75 0 01-1.06 0L12 12.56l-2.47 2.47a.75.75 0 01-1.06 0l-3-3a.75.75 0 010-1.06z"></path></svg>
 						</div>
 
 						<div class="p-4">
@@ -141,7 +143,7 @@ foreach ($result as $key => $value) {
 								<div class="mb-3">
 									<label for="email" class="form-label">Secret</label>
 									<input type="text" name="email" id="email" value="<?=$_SESSION['secret']?>" class="form-control" >
-								</div>
+								</div>	
 								<div class="mb-3 form-check">
 									<input type="checkbox" class="form-check-input" <?=$notify1;?> id="sendnotify1">
 								    <label class="form-check-label" for="sendnotify">Notify when balance goes down 3% in last hour</label>
@@ -149,7 +151,11 @@ foreach ($result as $key => $value) {
 								<div class="mb-3 form-check">
 									<input type="checkbox" class="form-check-input" <?=$notify2;?> id="sendnotify2">
 								    <label class="form-check-label" for="sendnotify">Notify when balance goes up 3% in last hour</label>
-								</div>								
+								</div>
+								<div class="mb-3 form-check">
+									<input type="checkbox" class="form-check-input" <?=$notify2;?> id="sendnotify2">
+								    <label class="form-check-label" for="sendnotify">Auto buy status</label>
+								</div>
 								<div class="mb-3">
 									<input type="button" id="confirm" value="Save" class="btn btn-primary" >
 								</div>
@@ -164,16 +170,25 @@ foreach ($result as $key => $value) {
 					<div class="card rounded border border-custom shadow-sm">
 						<div class="card-header">
 							<h6 class="card-header-title">Favorit Currrencys</h6>
-							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill-rule="evenodd" d="M5 3.75C5 2.784 5.784 2 6.75 2h10.5c.966 0 1.75.784 1.75 1.75v17.5a.75.75 0 01-1.218.586L12 17.21l-5.781 4.625A.75.75 0 015 21.25V3.75zm1.75-.25a.25.25 0 00-.25.25v15.94l5.031-4.026a.75.75 0 01.938 0L17.5 19.69V3.75a.25.25 0 00-.25-.25H6.75z"></path></svg>
 						</div>
 
 						<div class="p-4">
 							<form action="" method="post" name="configuration">
+								<ul class="list-group mb-3">
+								<?php
+								$favorites = Helpers::getCurrencysFavorites();
+								foreach ($favorites as $key => $value) {
+									echo '<li class="list-group-item">';
+									echo '<div class="form-check form-switch">
+											  <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" checked>
+											  <label class="form-check-label" for="flexSwitchCheckDefault">'.$value->book.'</label>
+										  </div>';
+									echo '</li>';
+								}
 
-								<div class="mb-3 form-check">
-									<input type="checkbox" class="form-check-input" <?=$notify2;?> id="sendnotify2">
-								    <label class="form-check-label" for="sendnotify"><?=$notify2;?></label>
-								</div>								
+								?>							
+								</ul>
 													
 								<div class="mb-3">
 									<input type="button" id="confirm" value="Save" class="btn btn-primary" >

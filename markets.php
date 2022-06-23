@@ -2,8 +2,10 @@
 session_start();
 require_once ('classes/functions.php'); 
 require_once ('classes/BitsoWallet.php'); 
+require_once ('classes/mySQL.php'); 
 
 use classes\BitsoWallet;
+use classes\MySQL;
 
 if (!$_SESSION) {
 	header('Location:index.php');
@@ -68,7 +70,7 @@ if (!$_SESSION) {
 							<thead>
 								<tr class="table-custom text-uppercase fs-7">
 									<th scope="col">Book</th>
-									<th scope="col" class="text-end">Last buy price</th>
+									<th scope="col" class="text-end">Last sell price</th>
 									<th scope="col" class="text-end">Current Price</th>
 									<th scope="col" class="text-end">Change</th>									
 									<th scope="col" class="text-end">Low Price</th>
@@ -154,6 +156,37 @@ if (!$_SESSION) {
 					</div>
 				</div>
 			</div> <!-- row -->
+
+			<div class="row">
+				<div class="col-md-4">
+					<div class="card border border-custom shadow-sm rounded mb-4">
+						<div class="card-header">
+							<h6 class="card-header-title">Crypto BOT (Active)</h6>
+							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+						</div>
+						<div class="card-body">
+							<?php
+							$prices = $bitsoWallet->getLastBoughtPrices('ltc_mxn');
+							$ticker = $bitsoWallet->getTicker();
+
+							$percent = (($ticker['ltc_mxn'] - $prices->price)/$ticker['ltc_mxn']) *100 ;
+
+							if ($percent > 6){
+								echo "Vender ". $prices->amount ." LTC";
+
+							} else if ($percent < -5){
+								echo "Comprar LTC en ". $ticker['ltc_mxn'];
+								$mysql = new MySQL();
+								$query = "Insert Into wallet_test (price) VALUES ('".$ticker['ltc_mxn']."')";
+								$mysql->mySQLquery($query);
+							} else {
+								echo "Esperando para comprar: ". $percent;
+							}							
+							?>
+						</div>
+					</div>
+				</div>
+			</div>
 					
 		</div> 	<!-- Container -->
 	</body>

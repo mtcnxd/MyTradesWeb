@@ -86,8 +86,13 @@ class MySQL {
 	
 	protected function mySQLconnect() 
 	{
-		$this->connect = mysqli_connect($this->host, $this->username, $this->password);
-		mysqli_select_db($this->connect, $this->database);
+		try {
+			$this->connect = mysqli_connect($this->host, $this->username, $this->password);
+			mysqli_select_db($this->connect, $this->database);
+		} catch (Exception $e){
+			throw new Exception ('Message: '. $e->getMessage());
+		}
+
 	}
 	
 	public function mySQLinsert($tbl, $data)

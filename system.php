@@ -96,8 +96,11 @@ if (!$_SESSION) {
 								}
 							}
 
-							$data = ['amount' => 3.5];
-							$bitsoWallet->updateBuyingPower($data);
+
+							$response = $bitsoWallet->placeOrder('mana_mxn','buy',15.0);
+
+							var_dump($response);
+
 
 							?>							
 							

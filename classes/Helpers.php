@@ -1,6 +1,10 @@
 <?php
 
-namespace Helpers;
+namespace classes;
+
+require_once('mySQL.php');
+
+use classes\MySQL;
 
 class Helpers
 {
@@ -54,5 +58,12 @@ class Helpers
         $string = number_format($days,0) ." days ". $hours ." hours ago"; 
 
         return $string;
+    }
+
+    static function getCurrencysFavorites()
+    {
+        $mysql = new MySQL();
+        $query = 'select * from wallet_favorites';
+        return $mysql->mySQLquery($query);
     }
 }

@@ -10,27 +10,33 @@ class Bitso {
 
 	public $bitsoKey 	= "TMJEPCYmIv";
 	public $bitsoSecret = "d181cda5b0f939ee1b42e7b45ebd93e5";
-	public $HTTPMethod  = "GET";
 
-	protected function getBitsoRequest($url)
+	protected function getBitsoRequest($url, $method = 'GET', $jsonData = null)
 	{
 		$nonce = (integer)round(microtime(true) * 10000 * 100);
 		
-		$JSONPayload = "";
-		$message = $nonce . $this->HTTPMethod.$url.$JSONPayload;
+		$jsonDataTest = "";
+		$message = $nonce.$method.$url.$jsonDataTest;
 		$signature = hash_hmac('sha256', $message, $this->bitsoSecret);
-		
+
 		$format = 'Bitso %s:%s:%s';
 		$authHeader =  sprintf($format, $this->bitsoKey, $nonce, $signature);	 
 
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, "https://api.bitso.com". $url);
+		
+		if ( !is_null($jsonData) ){
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+		}
+
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, "true");
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: '. $authHeader,'Content-Type: application/json'));
 		$response = curl_exec($ch);
 
 		return $response;
 	}
+
 
 	public function getFullTicker()
 	{
@@ -55,6 +61,7 @@ class Bitso {
 		return $currencys;
 	}
 
+
 	public function getTicker()
 	{
 		$payload = $this->getBitsoRequest("/v3/ticker/");
@@ -71,6 +78,7 @@ class Bitso {
 
 		return $currencys;
 	}
+
 
 	public function getBalance()
 	{
@@ -116,6 +124,27 @@ class Bitso {
 
 	}
 
+
+	public function placeOrder($book, $side, $price)
+	{
+		$major = "";
+		$minor = "";
+
+		$array = [
+			'book'  => $book,
+            'side'  => $side,
+            'price' => $price,
+            'type'  => 'limit',
+            'major' => '.01',
+        ];
+
+		$data = json_encode($array);
+
+		$response = $this->getBitsoRequest('/v3/orders/','POST',$data);
+		return $response;
+	}
+
+
 	public function getOpenOrders()
 	{
 		$payload = $this->getBitsoRequest("/v3/open_orders/");
@@ -125,6 +154,7 @@ class Bitso {
 		return $orders;
 	}
 
+
 	public function getUserTrades()
 	{
 		$payload = $this->getBitsoRequest("/v3/user_trades/");
@@ -133,6 +163,6 @@ class Bitso {
 		$trades = $json->payload;
 		return $trades;
 	}
-	
+
 
 }
