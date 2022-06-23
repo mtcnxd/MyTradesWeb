@@ -227,7 +227,7 @@ if (!$_SESSION) {
 										<div class="col">
 									    	<h6 class="card-title text-muted text-uppercase fs-7">
 									    		<?php
-									    		$oldest_buy = select_oldest_buy();
+									    		$oldest_buy = Helpers::getOldestBuy();
 												echo "Oldest buy: ". $oldest_buy[0]->currency ." (". $oldest_buy[0]->book .")";
 									    		?>
 									    	</h6>
@@ -252,7 +252,7 @@ if (!$_SESSION) {
 									    		Last wallet performance
 									    	</h6>
 									    	<h5 class="card-subtitle mb-2 fs-6">
-									    		<?=getChange().' %';?>
+									    		<?=Helpers::getLastPriceChange().' %';?>
 									    	</h5>
 								    	</div>
 								    	<div class="col-auto">

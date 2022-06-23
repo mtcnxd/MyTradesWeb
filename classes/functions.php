@@ -4,8 +4,6 @@ require_once('mySQL.php');
 
 use classes\MySQL;
 
-/****************** BLOQUE DE FUNCIONES **********************/
-
 function showHtmlRow($gain_lost, $bought, $current)
 {
 	if ($current!= 0){
@@ -71,15 +69,6 @@ function time_elapsed_str($time)
 	return $string;
 }
 
-function select_oldest_buy()
-{
-	$mysql = new MySQL();
-	$query = "SELECT *, TIMESTAMPDIFF(HOUR, date, now()) as elapsed FROM wallet_balance a 
-			  JOIN wallet_currencys b ON a.book = b.book ORDER by date ASC LIMIT 1";
-	$data  = $mysql->mySQLquery($query);
-	return $data; 
-}
-
 function select_min()
 {
 	$mysql = new MySQL();
@@ -113,31 +102,6 @@ function getCurrentChange($current_price)
 	
 }
 
-function getChange()
-{
-	$mysql = new MySQL();
-	$query = "SELECT * FROM wallet_performance ORDER BY id DESC LIMIT 2";
-	$data  = $mysql->mySQLquery($query);
-	
-	$values = array();
-
-	if (!empty($data)){
-		foreach ($data as $key => $value) {
-			$values[$key] = $value->amount;
-		}
-
-		$current_price 	= $values[0];
-		$last_price 	= $values[1];
-		
-		$change = (($current_price - $last_price) / $current_price) * 100;
-		$change = number_format($change, 2);
-
-		return $change;		
-	}
-
-}
-
-
 function getPerformanceIntime($time_elapsed = 12)
 {
 	$mysql = new MySQL();
@@ -146,34 +110,4 @@ function getPerformanceIntime($time_elapsed = 12)
 	$result = $mysql->mySQLquery($query);
 
 	return number_format($result[0]->performance, 2);
-}
-
-function getAverageTrades()
-{
-	$mysql = new MySQL();
-	$query = "SELECT AVG(trades) average FROM (
-		SELECT COUNT(*) trades, date_format(date,'%u-%Y') week FROM wallet_balance GROUP BY week) tbl";
-	$result = $mysql->mySQLquery($query);
-
-	return $result[0];
-}
-
-function getListTrades()
-{
-	$mysql = new MySQL();
-	$query = "SELECT book, COUNT(*) trades FROM `wallet_balance` WHERE status = 1 GROUP BY book ORDER BY trades";
-	$result = $mysql->mySQLquery($query);
-
-	return $result;
-}
-
-function getUserData($username)
-{
-	$mysql = new MySQL();
-	$query = "SELECT * FROM wallet_users a JOIN wallet_config b ON a.id = b.id_user 
-			  WHERE username = '$username'";
-
-	$result = $mysql->mySQLquery($query);
-
-	return $result;
 }

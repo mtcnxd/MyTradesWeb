@@ -231,19 +231,6 @@ class BitsoWallet extends Bitso
 		return $string;
 	}
 
-	public function openLogfile()
-	{
-		$fcontent = "";
-		$filename = 'error_log';
-
-		if (file_exists($filename)){
-			$file = fopen($filename, 'r');
-			$fcontent = fread($file, filesize($filename));;
-		}
-		
-		return $fcontent;
-	}
-
 	public function writeLogfile($filename, $content)
 	{
 		$date = date('dmY');

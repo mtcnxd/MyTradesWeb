@@ -1,8 +1,11 @@
 <?php
 session_start();
 require_once ('classes/functions.php'); 
-require_once ('classes/BitsoWallet.php'); 
+require_once ('classes/BitsoWallet.php');
+require_once ('classes/Helpers.php');
 
+
+use classes\Helpers;
 use classes\BitsoWallet;
 use classes\MySQL;
 
@@ -77,9 +80,7 @@ if (!$_SESSION) {
 
 							<?php
 
-							$bitsoWallet = new BitsoWallet();
-							$fcontent = $bitsoWallet->openLogfile();
-
+							$fcontent = Helpers::openLogfile();
 							$textrow = explode('[', $fcontent);
 
 							$i = 1;
@@ -97,10 +98,10 @@ if (!$_SESSION) {
 							}
 
 
+							$bitsoWallet = new BitsoWallet();
 							$response = $bitsoWallet->placeOrder('mana_mxn','buy',15.0);
 
 							var_dump($response);
-
 
 							?>							
 							

@@ -66,4 +66,78 @@ class Helpers
         $query = 'select * from wallet_favorites';
         return $mysql->mySQLquery($query);
     }
+
+    static function getListTrades()
+    {
+        $mysql = new MySQL();
+        $query = "select book, COUNT(*) trades FROM `wallet_balance` WHERE status = 1 GROUP BY book ORDER BY trades";
+        return $mysql->mySQLquery($query);
+    }
+
+    static function getUserData($username)
+    {
+        $mysql = new MySQL();
+        $query = "select * from wallet_users a JOIN wallet_config b ON a.id = b.id_user 
+                  WHERE username = '$username'";
+
+        return $mysql->mySQLquery($query);
+    }
+
+    static function getAverageTrades()
+    {
+        $mysql = new MySQL();
+        $query = "select AVG(trades) average from (
+            SELECT COUNT(*) trades, date_format(date,'%u-%Y') week FROM wallet_balance GROUP BY week) tbl";
+        $result = $mysql->mySQLquery($query);
+
+        return $result[0];
+    }
+
+    static function openLogfile()
+    {
+        $fcontent = "";
+        $filename = 'error_log';
+
+        if (file_exists($filename)){
+            $file = fopen($filename, 'r');
+            $fcontent = fread($file, filesize($filename));;
+        }
+        
+        return $fcontent;
+    }
+
+    static function getLastPriceChange()
+    {
+        $mysql = new MySQL();
+        $query = "select * from wallet_performance ORDER BY id DESC LIMIT 2";
+        $data  = $mysql->mySQLquery($query);
+        
+        $values = array();
+
+        if (!empty($data)){
+            foreach ($data as $key => $value) {
+                $values[$key] = $value->amount;
+            }
+
+            $current_price  = $values[0];
+            $last_price     = $values[1];
+            
+            $change = (($current_price - $last_price) / $current_price) * 100;
+            $change = number_format($change, 2);
+
+            return $change;     
+        }
+
+    }
+
+    static function getOldestBuy()
+    {
+        $mysql = new MySQL();
+        $query = "select *, TIMESTAMPDIFF(HOUR, date, now()) as elapsed FROM wallet_balance a 
+                  JOIN wallet_currencys b ON a.book = b.book ORDER by date ASC LIMIT 1";
+        
+        return $mysql->mySQLquery($query);
+    }
+
+
 }

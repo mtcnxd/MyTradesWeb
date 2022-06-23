@@ -2,7 +2,9 @@
 session_start();
 require_once ('classes/functions.php'); 
 require_once ('classes/BitsoWallet.php'); 
+require_once ('classes/Helpers.php');
 
+use classes\Helpers;
 use classes\BitsoWallet;
 
 if (!$_SESSION) {
@@ -118,7 +120,7 @@ if (!$_SESSION) {
 							    		AVG week orders
 							    	</h6>
 							    	<h5 class="card-subtitle mb-2 fs-6">
-							    		<?=getAverageTrades()->average;?>
+							    		<?=Helpers::getAverageTrades()->average;?>
 							    	</h5>
 						    	</div>
 						    	<div class="col-auto">
@@ -194,16 +196,16 @@ if (!$_SESSION) {
 		<div class="modal fade" id="modal_books" tabindex="-1" aria-labelledby="modal_books" aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
-				<div class="modal-header">
-					<h6 class="modal-title text-uppercase" id="modal_title">Last boughts</h6>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-				<div id="modalBooksContent"></div>	
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-				</div>
+					<div class="modal-header">
+						<h6 class="modal-title text-uppercase" id="modal_title">Last boughts</h6>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div id="modalBooksContent"></div>	
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+					</div>
 				</div>
 			</div>
 		</div>

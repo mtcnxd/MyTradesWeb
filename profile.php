@@ -1,6 +1,5 @@
 <?php
 session_start();
-require_once ('classes/functions.php');
 require_once ('classes/Helpers.php');
 
 use classes\MySQL;
@@ -10,13 +9,13 @@ if (!$_SESSION) {
 	header('Location:index.php');
 }
 
-$result = getUserData($_SESSION['name']);
+$userData = Helpers::getUserData($_SESSION['name']);
 
-foreach ($result as $key => $value) {
-	$name    = $value->name;
-	$email   = $value->email;
-	$notify1 = $value->notify_01;
-	$notify2 = $value->notify_02;
+foreach ($userData as $data) {
+	$name    = $data->name;
+	$email   = $data->email;
+	$notify1 = $data->notify_01;
+	$notify2 = $data->notify_02;
 }
 
 ?>
@@ -110,9 +109,9 @@ foreach ($result as $key => $value) {
 						<div class="card-body">
 							<ul class="list-group">
 								<?php
-								$listTrades = getListTrades();
+								$listTrades = Helpers::getListTrades();
 
-								foreach($listTrades as $key => $list){
+								foreach($listTrades as $list){
 									echo "<li class='list-group-item d-flex justify-content-between align-items-center'>";
 									echo 	"<a href='currentbook.php?book=$list->book'>". $list->book ."</a>";
 									echo 	"<span class='badge bg-primary rounded-pill'>".$list->trades."</span>";
@@ -169,7 +168,7 @@ foreach ($result as $key => $value) {
 				<div class="col-md-6">
 					<div class="card rounded border border-custom shadow-sm">
 						<div class="card-header">
-							<h6 class="card-header-title">Favorit Currrencys</h6>
+							<h6 class="card-header-title">Favorit currrencys</h6>
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill-rule="evenodd" d="M5 3.75C5 2.784 5.784 2 6.75 2h10.5c.966 0 1.75.784 1.75 1.75v17.5a.75.75 0 01-1.218.586L12 17.21l-5.781 4.625A.75.75 0 015 21.25V3.75zm1.75-.25a.25.25 0 00-.25.25v15.94l5.031-4.026a.75.75 0 01.938 0L17.5 19.69V3.75a.25.25 0 00-.25-.25H6.75z"></path></svg>
 						</div>
 
@@ -178,11 +177,11 @@ foreach ($result as $key => $value) {
 								<ul class="list-group mb-3">
 								<?php
 								$favorites = Helpers::getCurrencysFavorites();
-								foreach ($favorites as $key => $value) {
+								foreach ($favorites as $data) {
 									echo '<li class="list-group-item">';
 									echo '<div class="form-check form-switch">
 											  <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" checked>
-											  <label class="form-check-label" for="flexSwitchCheckDefault">'.$value->book.'</label>
+											  <label class="form-check-label" for="flexSwitchCheckDefault">'.$data->book.'</label>
 										  </div>';
 									echo '</li>';
 								}
@@ -199,7 +198,6 @@ foreach ($result as $key => $value) {
 					</div>	<!-- Card -->
 				</div>	<!-- Col -->
 
-
 			</div> 	<!-- Row -->
 		</div>	<!-- Container -->
 
@@ -207,16 +205,16 @@ foreach ($result as $key => $value) {
 		<div class="modal fade" id="modal_books" tabindex="-1" aria-labelledby="modal_books" aria-hidden="true">
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
-				<div class="modal-header">
-					<h6 class="modal-title text-uppercase" id="modal_title">Last boughts</h6>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-				<div id="modalBooksContent"></div>	
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-				</div>
+					<div class="modal-header">
+						<h6 class="modal-title text-uppercase" id="modal_title">Last boughts</h6>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div id="modalBooksContent"></div>	
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+					</div>
 				</div>
 			</div>
 		</div>
