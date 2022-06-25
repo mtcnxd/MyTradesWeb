@@ -2,21 +2,16 @@
 
 namespace classes;
 
-require_once('mySQL.php');
-
-use classes\MySQL;
-
 class Bitso {
 
 	public $bitsoKey 	= "TMJEPCYmIv";
 	public $bitsoSecret = "d181cda5b0f939ee1b42e7b45ebd93e5";
 
-	protected function getBitsoRequest($url, $method = 'GET', $jsonData = null)
+	protected function getBitsoRequest($url, $method = "GET", $json = "")
 	{
 		$nonce = (integer)round(microtime(true) * 10000 * 100);
-		
-		$jsonDataTest = "";
-		$message = $nonce.$method.$url.$jsonDataTest;
+		$json = "";
+		$message = $nonce.$method.$url.$json;
 		$signature = hash_hmac('sha256', $message, $this->bitsoSecret);
 
 		$format = 'Bitso %s:%s:%s';
@@ -25,10 +20,12 @@ class Bitso {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, "https://api.bitso.com". $url);
 		
-		if ( !is_null($jsonData) ){
+		/*
+		if ( !is_null($json) ){
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
 		}
+		*/
 
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, "true");
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: '. $authHeader,'Content-Type: application/json'));
@@ -131,15 +128,14 @@ class Bitso {
 		$minor = "";
 
 		$array = [
-			'book'  => $book,
-            'side'  => $side,
-            'price' => $price,
-            'type'  => 'limit',
-            'major' => '.01',
+			"book"  => $book,
+            "side"  => $side,
+            "price" => $price,
+            "type"  => "limit",
+            "major" => ".01",
         ];
 
 		$data = json_encode($array);
-
 		$response = $this->getBitsoRequest('/v3/orders/','POST',$data);
 		return $response;
 	}

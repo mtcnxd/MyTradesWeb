@@ -100,8 +100,7 @@ if (!$_SESSION) {
 
 							$bitsoWallet = new BitsoWallet();
 							$response = $bitsoWallet->placeOrder('mana_mxn','buy',15.0);
-
-							var_dump($response);
+							//var_dump($response);
 
 							?>							
 							

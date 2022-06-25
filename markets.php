@@ -3,13 +3,22 @@ session_start();
 require_once ('classes/functions.php'); 
 require_once ('classes/BitsoWallet.php'); 
 require_once ('classes/mySQL.php'); 
+require_once ('classes/Helpers.php'); 
 
 use classes\BitsoWallet;
+use classes\Helpers;
 use classes\MySQL;
 
 if (!$_SESSION) {
 	header('Location:index.php');
 }
+
+if($_GET){
+	$book = $_GET['book'];
+} else {
+	$book = 'btc_mxn';
+}
+
 ?>
 
 <html>
@@ -85,7 +94,7 @@ if (!$_SESSION) {
 							$bitsoWallet = new BitsoWallet();
 							$bitsoTicker = $bitsoWallet->getFullTicker();
 
-							$favorits 	 = ['btc_mxn','bch_mxn','ltc_mxn','mana_mxn','eth_mxn'];
+							$favorits 	 = ['btc_mxn','bch_mxn','ltc_mxn','mana_mxn','eth_mxn','bat_mxn'];
 
 							foreach ($bitsoTicker as $key => $value) {
 
@@ -107,16 +116,16 @@ if (!$_SESSION) {
 									echo 	"<td class='text-end'>". convertMoney( $last_buy_price ) ."</td>";
 									echo 	"<td class='text-end'>". convertMoney( $value['last'] ) ."</td>";
 									if ($change_percent < 0){
-									echo 	"<td class='text-end text-danger'>". $change_percent .'%'. $row_down;
+										echo 	"<td class='text-end text-danger'>". $change_percent .'%'. $row_down;
 									} else {
-									echo 	"<td class='text-end text-success'>". $change_percent .'%'. $row_up;
+										echo 	"<td class='text-end text-success'>". $change_percent .'%'. $row_up;
 									}
 									echo 	"<td class='text-end'>". convertMoney( $value['low'] ) ."</td>";
 									echo 	"<td class='text-end'>". convertMoney($change_24->volume) ."</td>";
 									if ($calc_entry < 0){
-									echo 	"<td class='text-end text-danger'>". number_format( $calc_entry,2 ) ."% </td>";
+										echo 	"<td class='text-end text-danger'>". number_format( $calc_entry,2 ) ."% </td>";
 									} else {
-									echo 	"<td class='text-end text-success'>". number_format( $calc_entry,2 ) ."% </td>";
+										echo 	"<td class='text-end text-success'>". number_format( $calc_entry,2 ) ."% </td>";
 									}
 									echo 	"<td class='text-end'>". convertMoney($change_24->minimum) ."</td>";
 									echo "</tr>";									
@@ -166,19 +175,15 @@ if (!$_SESSION) {
 						</div>
 						<div class="card-body">
 							<?php
-							$prices = $bitsoWallet->getLastBoughtPrices('ltc_mxn');
+							$prices = $bitsoWallet->getLastBoughtPrices($book);
 							$ticker = $bitsoWallet->getTicker();
-
-							$percent = (($ticker['ltc_mxn'] - $prices->price)/$ticker['ltc_mxn']) *100 ;
+							$percent = (($ticker[$book] - $prices->price)/$ticker[$book]) *100 ;
 
 							if ($percent > 6){
-								echo "Vender ". $prices->amount ." LTC";
+								echo "Vender ". $prices->amount ." ". $book;
 
 							} else if ($percent < -5){
-								echo "Comprar LTC en ". $ticker['ltc_mxn'];
-								$mysql = new MySQL();
-								$query = "Insert Into wallet_test (price) VALUES ('".$ticker['ltc_mxn']."')";
-								$mysql->mySQLquery($query);
+								echo "Comprar ". $book ." en ". $ticker[$book];
 							} else {
 								echo "Esperando para comprar: ". $percent;
 							}							
@@ -186,7 +191,32 @@ if (!$_SESSION) {
 						</div>
 					</div>
 				</div>
-			</div>
+
+				<div class="col-md-4">
+					<div class="card border border-custom shadow-sm rounded mb-4">
+						<div class="card-header">
+							<h6 class="card-header-title">Change of currency <?=$book?></h6>
+							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+						</div>
+						<div class="card-body">
+							<?php
+							$dataCurrency = Helpers::getChangeCurrency($book, 72);
+
+							$difference = ($dataCurrency['new_price']->price - $dataCurrency['old_price']->price);
+							$percent 	= ($difference / $dataCurrency['new_price']->price) *100;
+
+							echo '<ul class="list-group list-group-flush">';
+							foreach ($dataCurrency as $row => $data){
+								echo '<li class="list-group-item">'. convertMoney($data->price). '</li>';
+							}
+							echo '<li class="list-group-item">'. $percent. '</li>';
+							echo '</ul>';
+
+							?>
+						</div>
+					</div>
+				</div>
+			</div> <!-- row -->
 					
 		</div> 	<!-- Container -->
 	</body>
@@ -198,13 +228,8 @@ if (!$_SESSION) {
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
 <script>
 
-<?
-if($_GET)
-	$book = $_GET['book'];
-else
-	$book = 'btc_mxn';
-
-$priceData = $bitsoWallet->getChartMarketData($book);
+<?php
+$priceData = $bitsoWallet->getChartMarketData($book, 48);
 foreach ($priceData as $key => $prices) {
 	$priceArray[$key]  = $prices->price;
 	$volumeArray[$key] = $prices->volume;

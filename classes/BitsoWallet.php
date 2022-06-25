@@ -9,7 +9,6 @@ use classes\MySQL;
 
 class BitsoWallet extends Bitso 
 {
-
 	/*
 	GENERAL APP AND WEB
 	*/
@@ -192,9 +191,10 @@ class BitsoWallet extends Bitso
 		$payload = json_encode($data);
 
 		$ch = curl_init($url);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $payload );
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );		
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $payload );
 		curl_setopt($ch, CURLOPT_POST, true);
 		$response = curl_exec($ch);
 		curl_close($ch);
