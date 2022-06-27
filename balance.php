@@ -77,9 +77,8 @@ if (!$_SESSION) {
 							$chart_data[$balance['currency']] = $balance['value'];
 							$value_total += $balance['value'];
 
-							if ($balance['currency'] == 'usd'){
-								echo "OK";
-								$buy_power = $balance['value'];
+							if ($balance['currency'] == 'mxn' || $balance['currency'] == 'usd'){
+								$buy_power += $balance['value'];
 							} 
 
 							echo "<li class='list-group-item list-group-item-action'>";
@@ -93,7 +92,7 @@ if (!$_SESSION) {
 							echo "</li>";
 						}
 						
-						$buy_power = ($buy_power/$value_total) * 100;
+						$buy_power_percent = ($buy_power/$value_total) * 100;
 						?>
 						</ul>
 					</div>	<!-- Card -->
@@ -105,7 +104,7 @@ if (!$_SESSION) {
 									<div class="align-items-center row">
 										<div class="col">
 											<h6 class="card-title text-muted text-uppercase fs-7">
-												Buying power <?=" (".number_format($buy_power,2) ."%)";?>
+												Buying power <?=" (".number_format($buy_power_percent,2) ."%)";?>
 											</h6>
 											<h5 class="card-subtitle mb-2 fs-6">
 												<?=convertMoney($buy_power);?>

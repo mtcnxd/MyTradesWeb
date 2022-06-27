@@ -6,7 +6,6 @@ require_once ("test.fortech.mx/classes/mySQL.php");
 use classes\BitsoWallet;
 use classes\MySQL;
 
-
 $prices = $bitsoWallet->getLastBoughtPrices('ltc_mxn');
 $ticker = $bitsoWallet->getTicker();
 

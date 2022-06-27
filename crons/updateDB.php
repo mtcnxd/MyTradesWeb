@@ -19,7 +19,7 @@ $currentBalance = array_sum(array_values($balances_array));
 $walletChange = (($currentBalance - $latestBalance) / $currentBalance) * 100;
 $walletChange = number_format($walletChange, 2);
 
-if ($walletChange <= -1.0){
+if ($walletChange <= -1.2){
 	$data = [ 'Change' => $walletChange ];
 	$bitsoWallet->sendWebHook('BitsoWallet', $data);
 }
