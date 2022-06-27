@@ -167,6 +167,41 @@ if($_GET){
 			</div> <!-- row -->
 
 			<div class="row">
+
+				<div class="col-md-5">
+					<div class="card border border-custom shadow-sm rounded mb-4">
+						<div class="card-header">
+							<h6 class="card-header-title">Change of book <?=$book?></h6>
+							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+						</div>
+						<div class="card-body">
+							<?php
+							$dataCurrency = Helpers::getChangeCurrency($book, 72);
+
+							$difference = ($dataCurrency['new_price']->price - $dataCurrency['old_price']->price);
+							$percent 	= ($difference / $dataCurrency['new_price']->price) *100;
+
+							echo '<ul class="list-group list-group-flush">';
+							foreach ($dataCurrency as $row => $data){
+								echo '<li class="list-group-item">
+										<div class="row">
+											<div class="col">'. $data->date .'</div>
+											<div class="col text-end">'. convertMoney($data->price) .'</div>
+										</div>
+									</li>';
+							}
+								echo '<li class="list-group-item">
+										<div class="row">
+											<div class="col">Change </div>
+											<div class="col text-end">'. number_format($percent, 2)  .'%</div>
+										</div>
+									</li>';
+							echo '</ul>';
+							?>
+						</div>
+					</div>
+				</div>
+
 				<div class="col-md-4">
 					<div class="card border border-custom shadow-sm rounded mb-4">
 						<div class="card-header">
@@ -183,7 +218,7 @@ if($_GET){
 								echo "Vender ". $prices->amount ." ". $book;
 
 							} else if ($percent < -5){
-								echo "Comprar ". $book ." en ". $ticker[$book];
+								echo "Comprar ". $book ." en ". convertMoney($ticker[$book]);
 							} else {
 								echo "Esperando para comprar: ". $percent;
 							}							
@@ -192,30 +227,6 @@ if($_GET){
 					</div>
 				</div>
 
-				<div class="col-md-4">
-					<div class="card border border-custom shadow-sm rounded mb-4">
-						<div class="card-header">
-							<h6 class="card-header-title">Change of currency <?=$book?></h6>
-							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
-						</div>
-						<div class="card-body">
-							<?php
-							$dataCurrency = Helpers::getChangeCurrency($book, 72);
-
-							$difference = ($dataCurrency['new_price']->price - $dataCurrency['old_price']->price);
-							$percent 	= ($difference / $dataCurrency['new_price']->price) *100;
-
-							echo '<ul class="list-group list-group-flush">';
-							foreach ($dataCurrency as $row => $data){
-								echo '<li class="list-group-item">'. convertMoney($data->price). '</li>';
-							}
-							echo '<li class="list-group-item">'. $percent. '</li>';
-							echo '</ul>';
-
-							?>
-						</div>
-					</div>
-				</div>
 			</div> <!-- row -->
 					
 		</div> 	<!-- Container -->

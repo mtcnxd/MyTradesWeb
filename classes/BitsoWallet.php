@@ -149,11 +149,11 @@ class BitsoWallet extends Bitso
 	ONLY API LEVEL
 	*/
 
-	public function getChartMarketData($book = 'btc_mxn')
+	public function getChartMarketData($book = 'btc_mxn', $limit = 24)
 	{
 		$mysql = new MySQL();
 		$query = "select id, price, volume, date_format(date, '%H:%i') as date from (
-					SELECT * FROM wallet_analytics WHERE book = '$book' ORDER by date desc limit 24
+					SELECT * FROM wallet_analytics WHERE book = '$book' ORDER by date desc limit $limit
 				) tbl order by id asc";
 		$result = $mysql->mySQLquery($query);
 		return $result;

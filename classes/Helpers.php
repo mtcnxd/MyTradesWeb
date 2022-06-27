@@ -139,5 +139,17 @@ class Helpers
         return $mysql->mySQLquery($query);
     }
 
+    static function getChangeCurrency($book = 'btc_mxn', $time = 24)
+    {
+        $mysql = new MySQL();
+        $query = "select * from wallet_analytics where book = '$book' and date > now() - interval $time hour limit 1";
+        $prices_array['old_price'] = $mysql->mySQLquery($query)[0];
+
+        $query = "select * from wallet_analytics where book = '$book' order by date desc limit 1";
+        $prices_array['new_price'] = $mysql->mySQLquery($query)[0];
+
+        return $prices_array;
+    }
+
 
 }

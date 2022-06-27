@@ -78,6 +78,7 @@ if (!$_SESSION) {
 							$value_total += $balance['value'];
 
 							if ($balance['currency'] == 'usd'){
+								echo "OK";
 								$buy_power = $balance['value'];
 							} 
 
@@ -209,10 +210,10 @@ if (!$_SESSION) {
 
 								<div class="card-body">
 									<?php
-									$result = $bitsoWallet->getBalanceHistory(24);
+									$historyData = $bitsoWallet->getBalanceHistory(24);
 
 									echo "<table class='table table-hover'>";
-									foreach($result as $key => $value){
+									foreach($historyData as $key => $value){
 										$newDate = new DateTime($value->date);
 										echo "<tr>";
 										echo "    <td class='fw-bold'>". ($key + 1) ."</td>";
