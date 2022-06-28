@@ -60,18 +60,13 @@ class BitsoWallet extends Bitso
 		$result = $mysql->mySQLquery($query);
 
 		return number_format($result[0]->performance, 2);
-	}		
+	}
 
-	public function getLatestCurrencySell($book)
+	public function getLastBoughtPrices($book = 'btc_mxn')
 	{
 		$mysql = new MySQL();
-		$query = "SELECT * FROM wallet_balance WHERE status = 0 AND book = '$book' ORDER BY sell_date DESC LIMIT 1";
-		$data  = $mysql->mySQLquery($query);
-
-		if(!empty($data)){
-			return $data[0]->price;
-		}
-
+		$sql = "select * from wallet_balance where book = '$book' order by date desc limit 1";
+		return $mysql->mySQLquery($sql)[0];
 	}
 
 	public function getOldestBuy(){
@@ -138,12 +133,6 @@ class BitsoWallet extends Bitso
 
 	}
 
-	public function getLastBoughtPrices($book = 'btc_mxn')
-	{
-		$mysql = new MySQL();
-		$sql = "select * from wallet_balance where book = '$book' order by date desc limit 1";
-		return $mysql->mySQLquery($sql)[0];
-	}
 
 	/*
 	ONLY API LEVEL

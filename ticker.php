@@ -45,11 +45,12 @@ if (!$_SESSION) {
 	$currencys_percen = array();
 	
 	foreach ($ticker_array as $key => $value) {
-		if( strpos($value->book, "_mxn") or strpos($value->book, "_usd") ){
+		if( strpos($value->book, "_mxn") or strpos($value->book, "_usd") or $value->book == 'bat_btc' ){
 			$currencys_prices[$value->book] = $value->last;
 			$currencys_percen[$value->book] = $value->change_24;			
 		}
 	}
+
 	?>	
 
 	<body>
@@ -111,25 +112,28 @@ if (!$_SESSION) {
 									  FROM wallet_balance a LEFT JOIN wallet_currencys b 
 									  ON a.book = b.book WHERE status = 1 GROUP BY a.book";
 							
-							$data  = $mysql->mySQLquery($query);
+							$queryData  = $mysql->mySQLquery($query);
 		
-							foreach ($data as $key => $value) {
-								$change = $currencys_percen[$value->book]/$currencys_prices[$value->book] * 100;
-								$current_value = $currencys_prices[$value->book] * $value->amount;
-								$gain_lost = $current_value - $value->value;
+							foreach ($queryData as $bought) {
+								$change 	   = $currencys_percen[$bought->book]/$currencys_prices[$bought->book] * 100;
+								$current_value = $currencys_prices[$bought->book] * $bought->amount;
+								$gain_lost 	   = ($current_value - $bought->value);
 								
 								echo "<tr>";
-								echo 	"<td class='text-center'><img src='currencys/$value->file' width='20px' height='20px'></td>";
-								echo 	"<td><a href='currentbook.php?book=$value->book' class='link-secondary'>". $value->book ."</a></td>";
-								echo 	"<td class='text-end'>". number_format($value->amount,8)."</td>";
-								echo 	"<td class='text-end'>". convertMoney($currencys_prices[$value->book]) ."</td>";
+								echo 	"<td class='text-center'>
+											<img src='currencys/$bought->file' width='20px' height='20px'></td>";
+								echo 	"<td>
+											<a href='currentbook.php?book=$bought->book' class='link-secondary'>". $bought->book ."</a>
+										</td>";
+								echo 	"<td class='text-end'>". number_format($bought->amount,8)."</td>";
+								echo 	"<td class='text-end'>". convertMoney($currencys_prices[$bought->book]) ."</td>";
 								echo 	"<td class='text-end'>". number_format($change,2)."% "; icon_percent($change) ."</td>";
-								echo 	"<td class='text-end'>". convertMoney($value->value) ."</td>";
+								echo 	"<td class='text-end'>". convertMoney($bought->value) ."</td>";
 								echo 	"<td class='text-end'>". convertMoney($current_value) ."</td>";
-										showHtmlRow($gain_lost, $value->value, $current_value);
+										showHtmlRow($gain_lost, $bought->value, $current_value);
 								echo "</tr>";
 								
-								$t_value 	 += $value->value;
+								$t_value 	 += $bought->value;
 								$t_bought	 += $current_value;
 								$t_gain_lost += $gain_lost;
 							}

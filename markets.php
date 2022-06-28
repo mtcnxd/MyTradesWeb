@@ -103,7 +103,7 @@ if($_GET){
 									$change_percent = ($value['change']/ $value['last']) * 100;
 									$change_percent = number_format($change_percent, 2);
 
-									$last_buy_price = $bitsoWallet->getLatestCurrencySell($key);
+									$last_buy_price = $bitsoWallet->getLastBoughtPrices($key)->price;
 									$change_24 		= $bitsoWallet->getMinimunMaximun($key);
 									$calc_entry		= (($value['last'] - $change_24->minimum)/$value['last']) *100;
 
