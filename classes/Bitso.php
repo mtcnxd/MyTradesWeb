@@ -7,10 +7,9 @@ class Bitso {
 	public $bitsoKey 	= "TMJEPCYmIv";
 	public $bitsoSecret = "d181cda5b0f939ee1b42e7b45ebd93e5";
 
-	protected function getBitsoRequest($url, $method = "GET", $json = "")
+	protected function getBitsoRequest($url, $method = "GET", $json = null)
 	{
 		$nonce = (integer)round(microtime(true) * 10000 * 100);
-		$json = "";
 		$message = $nonce.$method.$url.$json;
 		$signature = hash_hmac('sha256', $message, $this->bitsoSecret);
 
@@ -19,13 +18,15 @@ class Bitso {
 
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, "https://api.bitso.com". $url);
-		
-		/*
+
+		if ($method == 'DELETE'){
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+		}
+
 		if ( !is_null($json) ){
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
 		}
-		*/
 
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, "true");
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: '. $authHeader,'Content-Type: application/json'));
@@ -122,21 +123,27 @@ class Bitso {
 	}
 
 
-	public function placeOrder($book, $side, $price)
+	public function getUserTrades()
 	{
-		$major = "";
-		$minor = "";
+		$payload = $this->getBitsoRequest("/v3/user_trades/");
+		$json = json_decode($payload);
+		$trades = $json->payload;
+		return $trades;
+	}
 
-		$array = [
+
+	public function placeOrder($book, $side, $price, $amount)
+	{
+		$arrayData = [
 			"book"  => $book,
             "side"  => $side,
             "price" => $price,
             "type"  => "limit",
-            "major" => ".01",
+            "major" => $amount,
         ];
 
-		$data = json_encode($array);
-		$response = $this->getBitsoRequest('/v3/orders/','POST',$data);
+		$jsonData = json_encode($arrayData);
+		$response = $this->getBitsoRequest('/v3/orders/','POST',$jsonData);
 		return $response;
 	}
 
@@ -144,20 +151,15 @@ class Bitso {
 	public function getOpenOrders()
 	{
 		$payload = $this->getBitsoRequest("/v3/open_orders/");
-
 		$json = json_decode($payload);
 		$orders = $json->payload;
 		return $orders;
 	}
 
-
-	public function getUserTrades()
+	public function cancelOpenOrder($oid)
 	{
-		$payload = $this->getBitsoRequest("/v3/user_trades/");
-
-		$json = json_decode($payload);
-		$trades = $json->payload;
-		return $trades;
+		$response = $this->getBitsoRequest('/v3/orders/'.$oid,'DELETE');
+		return $response;
 	}
 
 

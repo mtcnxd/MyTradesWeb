@@ -87,7 +87,8 @@ if (!$_SESSION) {
 								</tr>
 							</thead>
 
-							<?php		
+							<?php
+
 							foreach($orders as $number => $row){
 								echo "<tr>";								
 								echo "<td>". ($number + 1) ."</td>";
@@ -158,14 +159,16 @@ if (!$_SESSION) {
 								</tr>
 							</thead>
 							
-							<?php					
+							<?php
+
 							foreach($trades as $cell => $row){
 								$today  = new DateTime(date('d-m-Y'));
 								$date   = new DateTime($row->created_at);
-								$amount = ($row->major - $row->fees_amount);
 								$price  = $row->price;
 								$book   = $row->book;
 								$diff   = $date->diff($today);
+								$amount_cripto = ($row->major - $row->fees_amount);
+								$amount_fiat   = ($row->minor - $row->fees_amount);
 								$date->modify('-6 hours');
 								
 								echo "<tr id='$cell'>";							
@@ -173,11 +176,16 @@ if (!$_SESSION) {
 								echo "<td>". $diff->days ." days </td>";
 								echo "<td>". $row->side ."</td>";
 								echo "<td><a href='#' onclick=\"open_book_details('".$row->book."', this)\">". $row->book ."</a></td>";
-								echo "<td id='amount' class='text-end'>". $amount.' '.$row->major_currency ."</td>";			
+								if ($row->side == 'sell'){
+									echo "<td id='amount' class='text-end'>". convertMoney($amount_fiat).' '.$row->minor_currency ."</td>";
+								} else {
+									echo "<td id='amount' class='text-end'>". $amount_cripto.' '.$row->major_currency ."</td>";	
+								}
+								
 								echo "<td id='price' class='text-end'>". convertMoney($price).' '.$row->minor_currency ."</td>";
 								if($row->side == 'buy'){
 									echo '<td class="text-center">
-											<a href="#" onclick="bitso_save('.$amount.','.$price.',\''.$book.'\')">
+											<a href="#" onclick="bitso_save('.$amount_cripto.','.$price.',\''.$book.'\')">
 											<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#777777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
 											</a>
 										  </td>';								

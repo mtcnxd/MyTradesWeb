@@ -99,10 +99,22 @@ if (!$_SESSION) {
 
 
 							$bitsoWallet = new BitsoWallet();
-							$response = $bitsoWallet->placeOrder('mana_mxn','buy',15.0);
-							//var_dump($response);
+							
+							/*
+							Place and order params, book, side, price, amount
 
-							?>							
+							$response = $bitsoWallet->placeOrder('mana_mxn','buy',15.0, 1);
+							$json_object = json_decode($response);
+
+							if ( isset($json_object->error->message) ){
+								echo $json_object->error->message;
+							}
+							*/
+
+							// Cancel an order by oid
+							//$response = $bitsoWallet->cancelOpenOrder('mGNTjUN2GMWMNYxY');
+
+							?>
 							
 						</table>
 					</div>	<!-- Table -->
