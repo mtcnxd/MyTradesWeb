@@ -139,6 +139,17 @@ class Helpers
         return $mysql->mySQLquery($query);
     }
 
+    static function getAverageHistory()
+    {
+        $mysql = new MySQL();
+        $sql = "select * from (
+                    select avg(amount) amount, date_format(date, '%Y-%m-%d') as newdate 
+                    from wallet_performance group by newdate order by date desc limit 60
+                ) tbl order by newdate asc";
+        
+        return $mysql->mySQLquery($sql);
+    }
+
     static function getChangeCurrency($book = 'btc_mxn', $time = 24)
     {
         $mysql = new MySQL();

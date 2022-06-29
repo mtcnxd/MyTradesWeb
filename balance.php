@@ -2,7 +2,9 @@
 session_start();
 require_once ('classes/functions.php'); 
 require_once ('classes/BitsoWallet.php'); 
+require_once ('classes/Helpers.php'); 
 
+use classes\Helpers;
 use classes\BitsoWallet;
 
 if (!$_SESSION) {
@@ -56,6 +58,20 @@ if (!$_SESSION) {
 		</header>		
 		
 		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card border border-custom shadow-sm rounded mb-4">
+						<div class="card-header">
+							<h6 class="card-header-title">History Chart</h6>
+							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+						</div>
+						<div class="card-body">
+							<canvas class="p-3" id="allHistory" height="300" width="1100"></canvas>							
+						</div>
+					</div>
+				</div>	<!-- col-12 -->
+			</div>
+
 			<div class="row">
 				<div class="col">
 					<div class="card rounded border border-custom shadow-sm mb-4">
@@ -188,7 +204,7 @@ if (!$_SESSION) {
 						<div class="col-md-12">
 							<div class="card border border-custom shadow-sm rounded mb-4">
 								<div class="card-header">
-									<h6 class="card-header-title">Graphic</h6>
+									<h6 class="card-header-title">Distribution</h6>
 									<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
 								</div>
 								<div class="card-body">
@@ -238,7 +254,7 @@ if (!$_SESSION) {
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
 <script>
 const ctx = document.getElementById('myChart').getContext('2d');
-const myChart = new Chart(ctx, {
+const distributionChart = new Chart(ctx, {
     type: 'bar',
     data: {
         labels: ['<?=implode("','", array_keys($chart_data));?>'],
@@ -284,5 +300,45 @@ const myChart = new Chart(ctx, {
       }
     }
 });
+
+<?php
+$dataChart = Helpers::getAverageHistory();
+foreach ($dataChart as $key => $amount) {
+	$values[$key]  = $amount->amount;
+	$labels[$key]  = $amount->newdate;
+}
+?>
+
+const historyDiv = document.getElementById('allHistory').getContext('2d');
+const historyChart = new Chart(historyDiv, {
+    type: 'line',
+    data: {
+        labels: <?=json_encode( $labels );?>,
+        datasets: [{
+            label: 'Wallet Balance',
+            data: <?=json_encode( $values );?>,
+            borderColor: 'rgba(128, 247, 104, 1)',
+            backgroundColor: 'rgba(128, 247, 104, 0.5)',
+            borderWidth: 1,
+            pointRadius: 0,
+            hoverOffset: 5,
+            fill: true
+       }]
+    },
+    options: {
+		responsive: true,
+    	plugins: {
+      	legend: {
+        	position: 'none',
+        	align:'center',
+        	labels:{
+        		padding:25,
+        		boxWidth: 18,
+        		boxHeight: 17
+        	}
+      	}
+      }
+    }
+});
 </script>
- 
+

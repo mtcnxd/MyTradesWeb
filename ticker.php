@@ -352,6 +352,7 @@ const myChart = new Chart(ctx, {
             borderColor: 'rgba(252, 186, 3, 1)',
             borderWidth: 1,
             hoverOffset: 1,
+            pointRadius: 2,
             tension: 0.4
        }]
     },
