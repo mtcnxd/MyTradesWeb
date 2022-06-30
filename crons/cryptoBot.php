@@ -9,27 +9,46 @@ use classes\MySQL;
 $bitsoWallet = new BitsoWallet();
 $ticker = $bitsoWallet->getTicker();
 
-$books  = ['ltc_mxn','bat_mxn'];
+$books  = ['bat_mxn'];
 
-/*
+
 foreach ($books as $book) {
 	$prices = $bitsoWallet->getLastBoughtPrices($book);	
 	$change = (($ticker[$book] - $prices->price)/$ticker[$book]) *100 ;
 
-	if ($change < -4.5){
-		$mysql = new MySQL();
-		$query = "Insert Into wallet_test(price) VALUES ('".$ticker[$book]."')";
-		$mysql->mySQLquery($query);
+	if ($change < -5){
+		$available = $bitsoWallet->getWalletBalances();
+
+		if($available[9]['currency'] == 'mxn'){
+			if ($available[9]['amount'] > 30){
+				$amountBuy = (50 / $ticker[$book]);
+
+				$response = $bitsoWallet->placeOrder($book,'buy',$ticker[$book], $amountBuy);
+				$json_object = json_decode($response);
+
+				$mysql = new MySQL();
+				if ( isset($json_object->error->message) ){
+					$error = $json_object->error->message;
+					$query = "Insert Into wallet_test(price, book, response) VALUES ('".$ticker[$book]."','$amountBuy', '$book', '$error')";
+				} else {
+					$query = "Insert Into wallet_test(price, amount, book) VALUES ('".$ticker[$book]."','$amountBuy', '$book')";
+				}
+				$mysql->mySQLquery($query);
+
+			} else {
+				echo "You don't have mxn available to buy crypto.";
+			}
+		}
 	}
 }
-*/
+
 
 $prices = $bitsoWallet->getLastBoughtPrices('ltc_mxn');
 $percent = (($ticker['ltc_mxn'] - $prices->price)/$ticker['ltc_mxn']) *100 ;
 
-if ($percent < -4.5){
+if ($percent < -5){
 	$mysql = new MySQL();
-	$query = "Insert Into wallet_test(price) VALUES ('".$ticker['ltc_mxn']."')";
+	$query = "Insert Into wallet_test(price, book) VALUES ('".$ticker['ltc_mxn']."', 'ltc_mxn')";
 	$mysql->mySQLquery($query);
 }
 
@@ -38,8 +57,8 @@ if ($percent < -4.5){
 $prices = $bitsoWallet->getLastBoughtPrices('bat_mxn');
 $percent = (($ticker['bat_mxn'] - $prices->price)/$ticker['bat_mxn']) *100 ;
 
-if ($percent < -4.5){
+if ($percent < -5){
 	$mysql = new MySQL();
-	$query = "Insert Into wallet_test(price) VALUES ('".$ticker['bat_mxn']."')";
+	$query = "Insert Into wallet_test(price, book) VALUES ('".$ticker['bat_mxn']."', 'bat_mxn')";
 	$mysql->mySQLquery($query);
 }

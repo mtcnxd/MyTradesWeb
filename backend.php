@@ -8,15 +8,15 @@ $option = $_POST["option"];
 $mysql  = new MySQL();
 
 switch($option){
-	case 'insert_db':
+	case 'bitso_save':
 		$amount = $_POST["amount"];
 		$price  = $_POST["price"];
 		$book   = $_POST["book"];
 		
 		$vars = array(
-			"amount"=>"'$amount'", 
-			"price"=>"'$price'", 
-			"book"=>"'$book'"
+			"amount" =>"'$amount'", 
+			"price"	 =>"'$price'", 
+			"book"	 =>"'$book'"
 		);
 		
 		$exec = $mysql->mySQLinsert('wallet_balance', $vars);
@@ -55,7 +55,6 @@ switch($option){
 	break;
 	
 	case 'sell_currency':
-		// Send request
 		$ch = curl_init();
 		
 		$JSONPayload = json_encode(['book'  => 'btc_mxn',
@@ -75,5 +74,21 @@ switch($option){
 		$array = $json_object->{'payload'};
 		
 	break;	
+
+	case 'save_favorit':
+		$book   = $_POST["book"];
+		
+		$vars = array(
+			"book"	 =>"'$book'"
+		);
+		
+		$exec = $mysql->mySQLinsert('wallet_balance', $vars);
+		
+		if ($exec)
+			echo "El registro se guardo con exito!";
+		else 
+			echo "Ocurrio un error";
+
+	break;
 }
 

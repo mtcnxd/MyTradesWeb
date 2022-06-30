@@ -107,7 +107,7 @@ foreach ($userData as $data) {
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M13 7.5a1 1 0 11-2 0 1 1 0 012 0zm-3 3.75a.75.75 0 01.75-.75h1.5a.75.75 0 01.75.75v4.25h.75a.75.75 0 010 1.5h-3a.75.75 0 010-1.5h.75V12h-.75a.75.75 0 01-.75-.75z"></path><path fill-rule="evenodd" d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11 11-4.925 11-11S18.075 1 12 1zM2.5 12a9.5 9.5 0 1119 0 9.5 9.5 0 01-19 0z"></path></svg>
 						</div>
 						<div class="card-body">
-							<ul class="list-group">
+							<ul class="list-group list-group-flush">
 								<?php
 								$listTrades = Helpers::getListTrades();
 
@@ -145,11 +145,11 @@ foreach ($userData as $data) {
 								</div>	
 								<div class="mb-3 form-check">
 									<input type="checkbox" class="form-check-input" <?=$notify1;?> id="sendnotify1">
-								    <label class="form-check-label" for="sendnotify">Notify when balance goes down 3% in last hour</label>
+								    <label class="form-check-label" for="sendnotify">Notify when balance goes down 1.2% in last hour</label>
 								</div>
 								<div class="mb-3 form-check">
 									<input type="checkbox" class="form-check-input" <?=$notify2;?> id="sendnotify2">
-								    <label class="form-check-label" for="sendnotify">Notify when balance goes up 3% in last hour</label>
+								    <label class="form-check-label" for="sendnotify">Notify when balance goes up 1.2% in last hour</label>
 								</div>
 								<div class="mb-3 form-check">
 									<input type="checkbox" class="form-check-input" <?=$notify2;?> id="sendnotify2">
@@ -174,14 +174,14 @@ foreach ($userData as $data) {
 
 						<div class="p-4">
 							<form action="" method="post" name="configuration">
-								<ul class="list-group mb-3">
+								<ul class="list-group list-group-flush mb-3">
 								<?php
 								$favorites = Helpers::getCurrencysFavorites();
 								foreach ($favorites as $data) {
 									echo '<li class="list-group-item">';
 									echo '<div class="form-check form-switch">
-											  <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" checked>
-											  <label class="form-check-label" for="flexSwitchCheckDefault">'.$data->book.'</label>
+											  <input class="form-check-input" type="checkbox" role="switch" id="'.$data->book.'" onclick="save_favorit(this.id)" checked>
+											  <label class="form-check-label" for="'.$data->book.'">'.$data->book.'</label>
 										  </div>';
 									echo '</li>';
 								}
@@ -238,33 +238,47 @@ foreach ($userData as $data) {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script language="JavaScript">
 	
-	function open_book_details(book, button)
-	{
-		var modalBooks = new bootstrap.Modal(document.getElementById('modal_books'));
-		var modalTitle = $("#modal_title");
+function open_book_details(book, button)
+{
+	var modalBooks = new bootstrap.Modal(document.getElementById('modal_books'));
+	var modalTitle = $("#modal_title");
 
-		$("#modalBooksContent").load('backend.php', {
-			option:'modal_books',
-			book:book
-		}, function (){
-			modalTitle.text ('Book (' + book.replace("_", " / ") + ')') ;
-			modalBooks.show();
-		});
-	}
+	$("#modalBooksContent").load('backend.php', {
+		option:'modal_books',
+		book:book
+	}, function (){
+		modalTitle.text ('Book (' + book.replace("_", " / ") + ')') ;
+		modalBooks.show();
+	});
+}
 
-	function bitso_save(amount, price, book)
-	{
-		var toastLive = document.getElementById('liveToast');		
-		var toast = new bootstrap.Toast(toastLive);		
-		
-		$.post("backend.php",{
-			option:'insert_db',
-			amount:amount,
-			price:price,
-			book:book
-		}, function(response){
-			$("#message").text("Message: " + response);
-			toast.show();			
-		});
-	}
+function bitso_save(amount, price, book)
+{
+	var toastLive = document.getElementById('liveToast');		
+	var toast = new bootstrap.Toast(toastLive);		
+	
+	$.post("backend.php",{
+		option:'bitso_save',
+		amount:amount,
+		price:price,
+		book:book
+	}, function(response){
+		$("#message").text("Message: " + response);
+		toast.show();			
+	});
+}
+
+function save_favorit(book)
+{
+	$.post("backend.php",{
+		option:'save_favorit',
+		book:book
+
+	}, function(response){
+		$("#message").text("Message: " + response);
+		toast.show();			
+	});
+}
+
+
 </script>

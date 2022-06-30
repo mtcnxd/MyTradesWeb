@@ -63,7 +63,7 @@ if (!$_SESSION) {
 					<div class="card border border-custom shadow-sm rounded mb-4">
 						<div class="card-header">
 							<h6 class="card-header-title">History Chart</h6>
-							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart"><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>
 						</div>
 						<div class="card-body">
 							<canvas class="p-3" id="allHistory" height="300" width="1100"></canvas>							
@@ -205,7 +205,7 @@ if (!$_SESSION) {
 							<div class="card border border-custom shadow-sm rounded mb-4">
 								<div class="card-header">
 									<h6 class="card-header-title">Distribution</h6>
-									<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart-2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
 								</div>
 								<div class="card-body">
 									<canvas class="p-3" id="myChart" width="250" height="100"></canvas>							
@@ -219,7 +219,7 @@ if (!$_SESSION) {
 						<div class="col">
 							<div class="card border border-custom shadow-sm rounded mb-4">
 								<div class="card-header">
-									<h6 class="card-header-title">History balance last 24 hours</h6>
+									<h6 class="card-header-title">History last 24 hours</h6>
 									<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
 								</div>
 
@@ -328,15 +328,15 @@ const historyChart = new Chart(historyDiv, {
     options: {
 		responsive: true,
     	plugins: {
-      	legend: {
-        	position: 'none',
-        	align:'center',
-        	labels:{
-        		padding:25,
-        		boxWidth: 18,
-        		boxHeight: 17
-        	}
-      	}
+	      	legend: {
+	        	position: 'none',
+	        	align:'center',
+	        	labels:{
+	        		padding:25,
+	        		boxWidth: 18,
+	        		boxHeight: 17
+	        	}
+	      	}
       }
     }
 });
