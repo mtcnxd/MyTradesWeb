@@ -69,5 +69,9 @@ switch($option){
 			echo "Ocurrio un error";
 
 	break;
+
+	case 'cancell_order':
+
+	break;
 }
 
