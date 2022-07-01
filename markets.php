@@ -210,29 +210,20 @@ if($_GET){
 						</div>
 						<div class="card-body">
 							<?php
-							$available = $bitsoWallet->getWalletBalances();
-
-							if($available[9]['currency'] == 'mxn'){
-								if ($available[9]['amount'] > 100){								
-									
-								} else {
-									echo "You don't have mxn available to buy crypto.";
-								}
-							}
-
 							$prices = $bitsoWallet->getLastBoughtPrices($book);
 							$ticker = $bitsoWallet->getTicker();
 							$percent = (($ticker[$book] - $prices->price)/$ticker[$book]) *100 ;
 
 							if ($percent > 6){
-								echo "Vender ". $prices->amount ." ". $book;
+								echo "<p class='card-text text-success'>Vender ". $prices->amount ." ". $book ."</p>";
 
 							} else if ($percent < -5){
-								echo "Comprar ". $book ." en ". convertMoney($ticker[$book]);
-							} else {
-								echo "Esperando para comprar: ". $percent;
-							}	
+								echo "<p class='card-text text-danger'>Comprar ". $book ." en ". convertMoney($ticker[$book]) ."</p>";
 
+							} else {
+								echo "<p class='card-text'>Esperando para comprar: ". $percent ."</p>";
+
+							}
 
 							?>
 						</div>

@@ -9,7 +9,7 @@ use classes\MySQL;
 $bitsoWallet = new BitsoWallet();
 $ticker = $bitsoWallet->getTicker();
 
-$books  = ['bat_mxn'];
+$books  = ['bat_mxn','mana_mxn'];
 
 
 foreach ($books as $book) {
@@ -21,17 +21,22 @@ foreach ($books as $book) {
 
 		if($available[9]['currency'] == 'mxn'){
 			if ($available[9]['amount'] > 30){
-				$amountBuy = (50 / $ticker[$book]);
+				$amountBuy = number_format( (50 / $ticker[$book]), 8 );
 
 				$response = $bitsoWallet->placeOrder($book,'buy',$ticker[$book], $amountBuy);
 				$json_object = json_decode($response);
 
 				$mysql = new MySQL();
-				if ( isset($json_object->error->message) ){
-					$error = $json_object->error->message;
-					$query = "Insert Into wallet_test(price, book, response) VALUES ('".$ticker[$book]."','$amountBuy', '$book', '$error')";
+				if ( $json_object->success ){
+					$message = $json_object->payload->oid;
+					var_dump($error);
+					$query = "Insert Into wallet_test(price, amount, book, response) 
+								Values ('".$ticker[$book]."','$amountBuy', '$book', '$message')";
 				} else {
-					$query = "Insert Into wallet_test(price, amount, book) VALUES ('".$ticker[$book]."','$amountBuy', '$book')";
+					$message = $json_object->error->message;
+					$query = "Insert Into wallet_test(price, amount, book, response) 
+								Values ('".$ticker[$book]."','$amountBuy', '$book', '$message')";
+					
 				}
 				$mysql->mySQLquery($query);
 
