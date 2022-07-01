@@ -29,7 +29,6 @@ foreach ($books as $book) {
 				$mysql = new MySQL();
 				if ( $json_object->success ){
 					$message = $json_object->payload->oid;
-					var_dump($error);
 					$query = "Insert Into wallet_test(price, amount, book, response) 
 								Values ('".$ticker[$book]."','$amountBuy', '$book', '$message')";
 				} else {

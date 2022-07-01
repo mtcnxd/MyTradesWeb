@@ -53,27 +53,6 @@ switch($option){
 		}
 		echo "</table>";
 	break;
-	
-	case 'sell_currency':
-		$ch = curl_init();
-		
-		$JSONPayload = json_encode(['book'  => 'btc_mxn',
-			                        'side'  => 'sell',
-			                        'major' => '.0001',
-			                        'price' => '1000',
-			                        'type'  => 'limit']);		
-		
-		curl_setopt($ch, CURLOPT_URL, 'https://api.bitso.com/v3/orders/');
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, "true");
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $JSONPayload);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: ' .  $authHeader,'Content-Type: application/json'));
-		
-		$result = curl_exec($ch);
-		$json_object = json_decode($result);
-		$array = $json_object->{'payload'};
-		
-	break;	
 
 	case 'save_favorit':
 		$book   = $_POST["book"];
