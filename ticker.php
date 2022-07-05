@@ -45,10 +45,8 @@ if (!$_SESSION) {
 	$currencys_percen = array();
 	
 	foreach ($ticker_array as $key => $value) {
-		if( strpos($value->book, "_mxn") or strpos($value->book, "_usd") or $value->book == 'bat_btc' ){
-			$currencys_prices[$value->book] = $value->last;
-			$currencys_percen[$value->book] = $value->change_24;			
-		}
+		$currencys_prices[$value->book] = $value->last;
+		$currencys_percen[$value->book] = $value->change_24;			
 	}
 
 	?>	
