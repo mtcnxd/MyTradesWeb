@@ -149,8 +149,8 @@ if (!$_SESSION) {
 							</tr>
 						</table>
 					</div>		<!-- Table-responsive -->
-				</div> 			<!-- Card -->
-			</div>				<!-- Col-12 -->
+				</div> 		<!-- Card -->
+			</div>		<!-- Col-12 -->
 			
 			<div class="row mb-4">
 				<div class="col">
