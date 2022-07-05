@@ -20,11 +20,15 @@ foreach ($books as $book) {
 		$available = $bitsoWallet->getWalletBalances();
 
 		if($available[9]['currency'] == 'mxn'){
-			if ($available[9]['amount'] > 30){
-				$amountBuy = number_format( (50 / $ticker[$book]), 8 );
+			if ($available[9]['amount'] > 100){
+				$amountBuy = number_format( (100 / $ticker[$book]), 7 );
 
 				$response = $bitsoWallet->placeOrder($book,'buy',$ticker[$book], $amountBuy);
 				$json_object = json_decode($response);
+
+				$query = "Insert into wallet_test (price) VALUES ('".$ticker[$book]."')";
+				$query = "Insert into wallet_test (amount) VALUES (".$amountBuy.")";
+				$query = "Insert into wallet_test (response) VALUES (".$json_object.")";
 
 				$mysql = new MySQL();
 				if ( $json_object->success ){

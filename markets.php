@@ -94,7 +94,7 @@ if($_GET){
 							$bitsoWallet = new BitsoWallet();
 							$bitsoTicker = $bitsoWallet->getFullTicker();
 
-							$favorits 	 = ['btc_mxn','bch_mxn','ltc_mxn','mana_mxn','eth_mxn','bat_mxn'];
+							$favorits 	 = ['btc_mxn','ltc_mxn','mana_mxn','eth_mxn','bat_mxn'];
 
 							foreach ($bitsoTicker as $key => $value) {
 
@@ -215,13 +215,13 @@ if($_GET){
 							$percent = (($ticker[$book] - $prices->price)/$ticker[$book]) *100 ;
 
 							if ($percent > 6){
-								echo "<p class='card-text text-success'>Vender ". $prices->amount ." ". $book ."</p>";
+								echo "<p class='card-text text-success'>Sell ". $prices->amount ." ". extractCurrency($book) ."</p>";
 
 							} else if ($percent < -5){
-								echo "<p class='card-text text-danger'>Comprar ". $book ." en ". convertMoney($ticker[$book]) ."</p>";
+								echo "<p class='card-text text-danger'>Buy ". $book ." price ". convertMoney($ticker[$book]) ."</p>";
 
 							} else {
-								echo "<p class='card-text'>Esperando para comprar: ". $percent ."</p>";
+								echo "<p class='card-text'>Waiting for buy: ". $percent ."</p>";
 
 							}
 
