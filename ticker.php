@@ -230,11 +230,11 @@ if (!$_SESSION) {
 									    	<h6 class="card-title text-muted text-uppercase fs-7">
 									    		<?php
 									    		$oldest_buy = Helpers::getOldestBuy();
-												echo "Oldest buy: ". $oldest_buy[0]->currency ." (". $oldest_buy[0]->book .")";
+												echo "Oldest buy: ". $oldest_buy->currency ." (". $oldest_buy->book .")";
 									    		?>
 									    	</h6>
 									    	<h5 class="card-subtitle mb-2 fs-6">
-									    		<?=time_elapsed_str($oldest_buy[0]->elapsed);?>
+									    		<?=time_elapsed_str($oldest_buy->elapsed);?>
 									    	</h5>
 								    	</div>
 								    	<div class="col-auto">

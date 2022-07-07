@@ -93,6 +93,17 @@ class Helpers
         return $result[0];
     }
 
+    static function getAverageHistory()
+    {
+        $mysql = new MySQL();
+        $sql = "select * from (
+                    select avg(amount) amount, date_format(date, '%Y-%m-%d') as newdate 
+                    from wallet_performance group by newdate order by date desc limit 60
+                ) tbl order by newdate asc";
+        
+        return $mysql->mySQLquery($sql);
+    }
+
     static function openLogfile()
     {
         $fcontent = "";
@@ -134,20 +145,9 @@ class Helpers
     {
         $mysql = new MySQL();
         $query = "select *, TIMESTAMPDIFF(HOUR, date, now()) as elapsed FROM wallet_balance a 
-                  JOIN wallet_currencys b ON a.book = b.book ORDER by date ASC LIMIT 1";
+                  JOIN wallet_currencys b ON a.book = b.book WHERE a.status = true ORDER by date ASC LIMIT 1";
         
-        return $mysql->mySQLquery($query);
-    }
-
-    static function getAverageHistory()
-    {
-        $mysql = new MySQL();
-        $sql = "select * from (
-                    select avg(amount) amount, date_format(date, '%Y-%m-%d') as newdate 
-                    from wallet_performance group by newdate order by date desc limit 60
-                ) tbl order by newdate asc";
-        
-        return $mysql->mySQLquery($sql);
+        return $mysql->mySQLquery($query)[0];
     }
 
     static function getChangeCurrency($book = 'btc_mxn', $time = 24)
