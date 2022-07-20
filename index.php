@@ -8,17 +8,16 @@ if($_POST){
 	$password = $_POST['password'];
 
 	$mysql  = new MySQL();
-	$query 	= "SELECT * FROM wallet_users a JOIN wallet_config b ON a.id = b.id_user 
+	$query 	= "SELECT * FROM wallet_users a LEFT JOIN wallet_config b ON a.id = b.user 
 			   WHERE username = '$username' and password = '$password'";
 	$result = $mysql->mySQLquery($query);
 
 	foreach($result as $value){
 		if ($username == $value->username && $password == $value->password){
 			session_start();
+			$_SESSION['userid'] = $value->id;
 			$_SESSION['name']   = $value->username;
 			$_SESSION['email']  = $value->email;
-			$_SESSION['key'] 	= $value->bitso_key;
-			$_SESSION['secret'] = $value->bitso_secret;
 			
 			header('Location: ticker.php');
 

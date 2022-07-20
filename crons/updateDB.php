@@ -10,7 +10,7 @@ use classes\MySQL;
 Almacena los datos del balance de la cartera
 */
 
-$bitsoWallet = new BitsoWallet();
+$bitsoWallet = new BitsoWallet(1);
 
 $balances_array = $bitsoWallet->getAccountBalance();
 $latestBalance  = $bitsoWallet->getLatestBalance();

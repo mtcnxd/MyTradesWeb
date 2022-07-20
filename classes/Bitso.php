@@ -4,9 +4,6 @@ namespace classes;
 
 class Bitso {
 
-	public $bitsoKey 	= "TMJEPCYmIv";
-	public $bitsoSecret = "d181cda5b0f939ee1b42e7b45ebd93e5";
-
 	protected function getBitsoRequest($url, $method = "GET", $json = null)
 	{
 		$nonce = (integer)round(microtime(true) * 10000 * 100);
@@ -33,6 +30,13 @@ class Bitso {
 		$response = curl_exec($ch);
 
 		return $response;
+	}
+
+	public function getUserInformation()
+	{
+		$payload = $this->getBitsoRequest('/v3/account_status/');
+		$json = json_decode($payload);
+		return $json->payload;
 	}
 
 

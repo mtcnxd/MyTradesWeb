@@ -13,6 +13,14 @@ class BitsoWallet extends Bitso
 	GENERAL APP AND WEB
 	*/
 
+	public function __construct($user = null)
+	{
+		$mysql = new MySQL();
+		$data  = $mysql->mySQLquery("SELECT * FROM wallet_config WHERE user = $user");
+		$this->bitsoKey 	= $data[0]->bitso_key;
+		$this->bitsoSecret  = $data[0]->bitso_secret;
+	}
+
 	public function getLatestBalance()
 	{
 		$mysql = new MySQL();
