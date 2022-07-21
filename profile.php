@@ -1,31 +1,47 @@
 <?php
 session_start();
-require_once ('classes/Helpers.php');
 require_once ('classes/BitsoWallet.php');
+require_once ('classes/Helpers.php');
 
-use classes\MySQL;
-use classes\Helpers;
 use classes\BitsoWallet;
+use classes\Helpers;
+use classes\MySQL;
 
-if (!$_SESSION) {
+if (!$_SESSION || !$_SESSION['userid']) {
 	header('Location:index.php');
 }
 
-$userData = Helpers::getUserData($_SESSION['name']);
+$userId = $_SESSION['userid'];
 
-foreach ($userData as $data) {
-	$name    = $data->name;
-	$email   = $data->email;
-	$notify1 = $data->notify_01;
-	$notify2 = $data->notify_02;
+if (!Helpers::isApiConfigured($userId)){
+	$bitsoWallet = new BitsoWallet($userId);
+	$userData = $bitsoWallet->getUserInformation();
+
+	var_dump($userData);
+
+	if ($userData){
+		$user = $userData->first_name ." ". $userData->last_name;
+		$icon = $userData->gravatar_img;	
+	} else {
+		$user = $_SESSION['name'];
+		$icon = "";
+	}	
 }
 
-$userId = $_SESSION['userid'];
-$bitsoWallet = new BitsoWallet($userId);
-$userData = $bitsoWallet->getUserInformation();
+$notify1 = null;
+$notify2 = null;
 
-$user = $userData->first_name ." ". $userData->last_name;
-$icon = $userData->gravatar_img;
+$userConfig = Helpers::getUserConfig($userId);
+
+if ($userConfig){
+	foreach ($userConfig as $data) {
+		$name    = $data->name;
+		$email   = $data->email;
+		$notify1 = $data->notify_01;
+		$notify2 = $data->notify_02;
+	}
+}
+
 ?>
 
 <html>
@@ -53,7 +69,7 @@ $icon = $userData->gravatar_img;
 		
 		<div class="container">
 			<div class="row mb-4">
-				<div class="col">
+				<div class="col-md-6">
 					<div class="card rounded border border-custom shadow-sm">
 						<div class="card-header">
 							<h6 class="card-header-title">Profile</h6>
@@ -63,8 +79,8 @@ $icon = $userData->gravatar_img;
 						<div class="p-4">
 							<form action="" method="post" name="profile">
 								<div class="mb-3">
-									<label for="name" class="form-label">Full name</label>
-									<input type="text" name="name" id="name" value="<?=$name;?>" class="form-control">
+									<label for="name" class="form-label">Bitso name</label>
+									<input type="text" name="name" id="name" value="<?=$user;?>" class="form-control" disabled>
 								</div>								
 								<div class="mb-3">
 									<label for="username" class="form-label">Username</label>
@@ -86,32 +102,6 @@ $icon = $userData->gravatar_img;
 					</div>	
 				</div>	<!-- Col -->
 
-				<div class="col">
-					<div class="card rounded border border-custom shadow-sm">
-						<div class="card-header">
-							<h6 class="card-header-title">Profile statistics</h6>
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M13 7.5a1 1 0 11-2 0 1 1 0 012 0zm-3 3.75a.75.75 0 01.75-.75h1.5a.75.75 0 01.75.75v4.25h.75a.75.75 0 010 1.5h-3a.75.75 0 010-1.5h.75V12h-.75a.75.75 0 01-.75-.75z"></path><path fill-rule="evenodd" d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11 11-4.925 11-11S18.075 1 12 1zM2.5 12a9.5 9.5 0 1119 0 9.5 9.5 0 01-19 0z"></path></svg>
-						</div>
-						<div class="card-body">
-							<ul class="list-group list-group-flush">
-								<?php
-								$listTrades = Helpers::getListTrades();
-
-								foreach($listTrades as $list){
-									echo "<li class='list-group-item d-flex justify-content-between align-items-center'>";
-									echo 	"<a href='currentbook.php?book=$list->book'>". $list->book ."</a>";
-									echo 	"<span class='badge bg-primary rounded-pill'>".$list->trades."</span>";
-									echo "</li>";
-								}
-
-								?>
-							</ul>							
-						</div>
-					</div>
-				</div>	<!-- Col -->
-			</div>	<!-- row -->
-
-			<div class="row mb-4">
 				<div class="col-md-6">
 					<div class="card rounded border border-custom shadow-sm">
 						<div class="card-header">
@@ -122,12 +112,12 @@ $icon = $userData->gravatar_img;
 						<div class="p-4">
 							<form action="" method="post" name="configuration">
 								<div class="mb-3">
-									<label for="username" class="form-label">API</label>
-									<input type="text" name="username" id="username" value="<?=$_SESSION['key']?>" class="form-control">
+									<label for="bitsoKey" class="form-label">API</label>
+									<input type="text" name="bitsoKey" id="bitsoKey" value="<?=$_SESSION['key']?>" class="form-control">
 								</div>
 								<div class="mb-3">
-									<label for="email" class="form-label">Secret</label>
-									<input type="text" name="email" id="email" value="<?=$_SESSION['secret']?>" class="form-control" >
+									<label for="bitsoSecret" class="form-label">Secret</label>
+									<input type="text" name="bitsoSecret" id="bitsoSecret" value="<?=$_SESSION['secret']?>" class="form-control" >
 								</div>	
 								<div class="mb-3 form-check">
 									<input type="checkbox" class="form-check-input" <?=$notify1;?> id="sendnotify1">
@@ -142,7 +132,7 @@ $icon = $userData->gravatar_img;
 								    <label class="form-check-label" for="sendnotify">Auto buy status</label>
 								</div>
 								<div class="mb-3">
-									<input type="button" id="confirm" value="Save" class="btn btn-primary" >
+									<input type="button" id="confirm" value="Save" onclick="saveConfig()" class="btn btn-primary" >
 								</div>
 							</form>
 						</div>
@@ -150,6 +140,35 @@ $icon = $userData->gravatar_img;
 					</div>	<!-- Card -->
 				</div>	<!-- Col -->
 
+			</div>	<!-- row -->
+
+			<div class="row mb-4">
+				<div class="col-md-6">
+					<div class="card rounded border border-custom shadow-sm">
+						<div class="card-header">
+							<h6 class="card-header-title">Statistics</h6>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path d="M13 7.5a1 1 0 11-2 0 1 1 0 012 0zm-3 3.75a.75.75 0 01.75-.75h1.5a.75.75 0 01.75.75v4.25h.75a.75.75 0 010 1.5h-3a.75.75 0 010-1.5h.75V12h-.75a.75.75 0 01-.75-.75z"></path><path fill-rule="evenodd" d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11 11-4.925 11-11S18.075 1 12 1zM2.5 12a9.5 9.5 0 1119 0 9.5 9.5 0 01-19 0z"></path></svg>
+						</div>
+						<div class="card-body">
+							<ul class="list-group list-group-flush">
+								<?php
+								$listTrades = $bitsoWallet->getListTrades();
+
+								if (!$listTrades){
+									echo "<p>Nothing here yet!</p>";
+								} else {
+									foreach($listTrades as $list){
+										echo "<li class='list-group-item d-flex justify-content-between align-items-center'>";
+										echo 	"<a href='currentbook.php?book=$list->book'>". $list->book ."</a>";
+										echo 	"<span class='badge bg-primary rounded-pill'>".$list->trades."</span>";
+										echo "</li>";
+									}
+								}
+								?>
+							</ul>							
+						</div>
+					</div>
+				</div>	<!-- Col -->
 
 				<div class="col-md-6">
 					<div class="card rounded border border-custom shadow-sm">
@@ -223,6 +242,15 @@ $icon = $userData->gravatar_img;
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script language="JavaScript">
+
+function saveConfig()
+{
+	var bitsoKey = $("#bitsoKey").val();
+	var bitsoSecret = $("#bitsoSecret").val();
+
+	console.log(bitsoKey);
+	console.log(bitsoSecret);
+}
 	
 function open_book_details(book, button)
 {

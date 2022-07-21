@@ -8,15 +8,17 @@ $option = $_POST["option"];
 $mysql  = new MySQL();
 
 switch($option){
-	case 'bitso_save':
+	case 'insert_db':
 		$amount = $_POST["amount"];
 		$price  = $_POST["price"];
 		$book   = $_POST["book"];
+		$userId = $_POST["userId"];
 		
 		$vars = array(
 			"amount" =>"'$amount'", 
 			"price"	 =>"'$price'", 
-			"book"	 =>"'$book'"
+			"book"	 =>"'$book'",
+			"userId" =>"'$userId'"
 		);
 		
 		$exec = $mysql->mySQLinsert('wallet_balance', $vars);

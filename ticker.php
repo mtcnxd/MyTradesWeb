@@ -8,7 +8,7 @@ use classes\BitsoWallet;
 use classes\Helpers;
 use classes\MySQL;
 
-if (!$_SESSION) {
+if (!$_SESSION || !$_SESSION['userid']) {
 	header('Location:index.php');
 }
 
@@ -16,13 +16,26 @@ $userId = $_SESSION['userid'];
 $bitsoWallet = new BitsoWallet($userId);
 $userData = $bitsoWallet->getUserInformation();
 
-$user = $userData->first_name ." ". $userData->last_name;
-$icon = $userData->gravatar_img;
+if ($userData){
+	$user = $userData->first_name ." ". $userData->last_name;
+	$icon = $userData->gravatar_img;	
+} else {
+	$user = $_SESSION['name'];
+	$icon = null;
+}
+
+$ticker_array = $bitsoWallet->getFullTicker();
+	
+foreach ($ticker_array as $key => $value) {
+	$currencys_prices[$key] = $value['last'];
+	$currencys_percen[$key] = $value['change'];
+}
+
 ?>
 
 <html>
 	<head>
-		<title>Bitso Wallet (<?=$_SESSION['name']?>)</title>
+		<title>Bitso Wallet (<?=$user?>)</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">		
 		<!-- CSS only -->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" 
@@ -37,26 +50,6 @@ $icon = $userData->gravatar_img;
 				crossorigin="anonymous">
 		</script>		
 	</head>
-	
-	<?php
-
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, 'https://api.bitso.com/v3/ticker/');
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, "true");
-	
-	$ticker_result = curl_exec($ch);
-	$ticker_json   = json_decode($ticker_result);
-	$ticker_array  = $ticker_json->payload;
-	
-	$currencys_prices = array();
-	$currencys_percen = array();
-	
-	foreach ($ticker_array as $key => $value) {
-		$currencys_prices[$value->book] = $value->last;
-		$currencys_percen[$value->book] = $value->change_24;			
-	}
-
-	?>	
 
 	<body>
 		<header class="p-3 mb-3 border-bottom border-custom bg-white shadow-sm">
@@ -89,15 +82,10 @@ $icon = $userData->gravatar_img;
 							$t_value = 0;
 							$t_bought = 0;
 							$t_gain_lost = 0;
+
+							$result = $bitsoWallet->getCurrencysBought();
 							
-							$mysql = new MySQL();
-							$query = "SELECT a.book, SUM(amount) as amount, SUM(price * amount) as value, b.file 
-									  FROM wallet_balance a LEFT JOIN wallet_currencys b 
-									  ON a.book = b.book WHERE status = 1 GROUP BY a.book";
-							
-							$queryData  = $mysql->mySQLquery($query);
-		
-							foreach ($queryData as $bought) {
+							foreach ($result as $bought) {
 								$change 	   = $currencys_percen[$bought->book]/$currencys_prices[$bought->book] * 100;
 								$current_value = $currencys_prices[$bought->book] * $bought->amount;
 								$gain_lost 	   = ($current_value - $bought->value);
@@ -145,12 +133,9 @@ $icon = $userData->gravatar_img;
 								<h6 class="card-header-title">Wallet performance</h6>
 								<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart-2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
 							</div>
-							<?php 
-							$chart_data = array();
-							$query = "SELECT date, amount 
-									  FROM (SELECT id, DATE_FORMAT(date,'%l.%p') as date, TRUNCATE(amount,2) as amount 
-									  FROM wallet_performance ORDER BY id DESC LIMIT 20) Tbl ORDER BY id ASC";
-							$data = $mysql->mySQLquery($query);
+							<?php
+							$data = $bitsoWallet->getChartPerformance();
+
 							foreach ($data as $key => $chart) {
 								$chart_data[$chart->date] = $chart->amount;
 							}

@@ -1,24 +1,32 @@
 <?php
 session_start();
-require_once ('classes/functions.php'); 
 require_once ('classes/BitsoWallet.php');
 require_once ('classes/Helpers.php');
+require_once ('classes/functions.php'); 
 
-
-use classes\Helpers;
 use classes\BitsoWallet;
+use classes\Helpers;
 use classes\MySQL;
 
-if (!$_SESSION) {
+if (!$_SESSION || !$_SESSION['userid']) {
 	header('Location:index.php');
 }
 
 $userId = $_SESSION['userid'];
-$bitsoWallet = new BitsoWallet($userId);
-$userData = $bitsoWallet->getUserInformation();
 
-$user = $userData->first_name ." ". $userData->last_name;
-$icon = $userData->gravatar_img;
+if (!Helpers::isApiConfigured($userId)){
+	$bitsoWallet = new BitsoWallet($userId);
+	$userData = $bitsoWallet->getUserInformation();
+
+	if ($userData){
+		$user = $userData->first_name ." ". $userData->last_name;
+		$icon = $userData->gravatar_img;	
+	} else {
+		$user = $_SESSION['name'];
+		$icon = "";
+	}
+}
+
 ?>
 
 <html>

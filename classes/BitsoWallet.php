@@ -9,16 +9,30 @@ use classes\MySQL;
 
 class BitsoWallet extends Bitso 
 {
-	/*
-	GENERAL APP AND WEB
-	*/
+	public $user = null;
+	protected $bitsoKey;
+	protected $bitsoSecret;
 
 	public function __construct($user = null)
 	{
 		$mysql = new MySQL();
+		$this->user = $user;
 		$data  = $mysql->mySQLquery("SELECT * FROM wallet_config WHERE user = $user");
-		$this->bitsoKey 	= $data[0]->bitso_key;
-		$this->bitsoSecret  = $data[0]->bitso_secret;
+		if ($data){
+			$this->bitsoKey 	= $data[0]->bitso_key;
+			$this->bitsoSecret  = $data[0]->bitso_secret;
+
+		}
+	}
+
+	public function getCurrencysBought()
+	{
+		$mysql = new MySQL();
+		$query = "Select a.book, SUM(amount) as amount, SUM(price * amount) as value, b.file 
+				FROM wallet_balance a LEFT JOIN wallet_currencys b ON a.book = b.book 
+				WHERE status = 1 and user = ".$this->user." GROUP BY a.book";
+		
+		return $mysql->mySQLquery($query);
 	}
 
 	public function getLatestBalance()
@@ -53,7 +67,7 @@ class BitsoWallet extends Bitso
 	public function getAverageTrades()
 	{
 		$mysql = new MySQL();
-		$query = "SELECT AVG(trades) average FROM (
+		$query = "Select AVG(trades) average FROM (
 			SELECT COUNT(*) trades, date_format(date,'%u-%Y') week FROM wallet_balance GROUP BY week) tbl";
 		$result = $mysql->mySQLquery($query);
 
@@ -146,6 +160,15 @@ class BitsoWallet extends Bitso
 	ONLY API LEVEL
 	*/
 
+	public function getChartPerformance()
+	{
+		$mysql = new MySQL();	
+		$query = "Select date, amount 
+				  FROM (SELECT id, DATE_FORMAT(date,'%l.%p') as date, TRUNCATE(amount,2) as amount 
+				  FROM wallet_performance WHERE user = ".$this->user." ORDER BY id DESC LIMIT 20) Tbl ORDER BY id ASC";
+		return $mysql->mySQLquery($query);
+	}
+
 	public function getChartMarketData($book = 'btc_mxn', $limit = 24)
 	{
 		$mysql = new MySQL();
@@ -178,9 +201,16 @@ class BitsoWallet extends Bitso
 	public function getBalanceHistory($limit = 12)
 	{
 		$mysql = new MySQL();
-		$query = "SELECT * FROM wallet_performance ORDER BY date DESC LIMIT $limit";
+		$query = "Select * FROM wallet_performance WHERE user = ".$this->user." ORDER BY date DESC LIMIT $limit";
 		return $mysql->mySQLquery($query);
 	}
+
+	public function getListTrades()
+    {
+        $mysql = new MySQL();
+        $query = "select book, COUNT(*) trades FROM `wallet_balance` WHERE status = 1 and user = ".$this->user." GROUP BY book ORDER BY trades";
+        return $mysql->mySQLquery($query);
+    }
 
 	public function sendWebHook($event, $data) 
 	{

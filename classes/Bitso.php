@@ -36,7 +36,9 @@ class Bitso {
 	{
 		$payload = $this->getBitsoRequest('/v3/account_status/');
 		$json = json_decode($payload);
-		return $json->payload;
+		if (isset($json->payload)){
+			return $json->payload;
+		}
 	}
 
 

@@ -4,24 +4,39 @@ require_once ('classes/functions.php');
 require_once ('classes/BitsoWallet.php'); 
 require_once ('classes/Helpers.php');
 
-use classes\Helpers;
 use classes\BitsoWallet;
+use classes\Helpers;
 
-if (!$_SESSION) {
+if (!$_SESSION || !$_SESSION['userid']) {
 	header('Location:index.php');
 }
 
 $userId = $_SESSION['userid'];
-$bitsoWallet = new BitsoWallet($userId);
-$userData = $bitsoWallet->getUserInformation();
 
-$user = $userData->first_name ." ". $userData->last_name;
-$icon = $userData->gravatar_img;
+$orders = null;
+$trades = null;
+
+if (!Helpers::isApiConfigured($userId)){
+	$bitsoWallet = new BitsoWallet($userId);
+	$userData = $bitsoWallet->getUserInformation();
+
+	if ($userData){
+		$user = $userData->first_name ." ". $userData->last_name;
+		$icon = $userData->gravatar_img;	
+	} else {
+		$user = $_SESSION['name'];
+		$icon = null;
+	}
+
+	$orders  = $bitsoWallet->getOpenOrders();
+	$trades  = $bitsoWallet->getUserTrades();
+	$average = $bitsoWallet->getAverageTrades();
+}
 ?>
 
 <html>
 	<head>
-		<title>Bitso Wallet (<?=$_SESSION['name']?>)</title>
+		<title>Bitso Wallet (<?=$user?>)</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<!-- CSS only -->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" 
@@ -36,12 +51,7 @@ $icon = $userData->gravatar_img;
 				crossorigin="anonymous">
 		</script>		
 	</head>
-	
-	<?php
-	$orders = $bitsoWallet->getOpenOrders();
-	$trades = $bitsoWallet->getUserTrades();
-	?>
-	
+		
 	<body>
 		<header class="p-3 mb-3 border-bottom border-custom bg-white shadow-sm">
 			<?php include('includes/mainmenu.php') ?>
@@ -70,7 +80,6 @@ $icon = $userData->gravatar_img;
 							</thead>
 
 							<?php
-
 							foreach($orders as $number => $row){
 								echo "<tr>";								
 								echo "<td>". ($number + 1) ."</td>";
@@ -103,7 +112,7 @@ $icon = $userData->gravatar_img;
 							    		AVG week orders
 							    	</h6>
 							    	<h5 class="card-subtitle mb-2 fs-6">
-							    		<?=Helpers::getAverageTrades()->average;?>
+							    		<?=$average?>
 							    	</h5>
 						    	</div>
 						    	<div class="col-auto">
@@ -167,7 +176,7 @@ $icon = $userData->gravatar_img;
 								echo "<td id='price' class='text-end'>". convertMoney($price).' '.$row->minor_currency ."</td>";
 								if($row->side == 'buy'){
 									echo '<td class="text-center">
-											<a href="#" onclick="bitso_save('.$amount_cripto.','.$price.',\''.$book.'\')">
+											<a href="#" onclick="bitso_save('.$amount_cripto.','.$price.',\''.$book.'\','.$userId.')">
 											<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#777777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
 											</a>
 										  </td>';								
@@ -232,7 +241,7 @@ $icon = $userData->gravatar_img;
 		});
 	}
 
-	function bitso_save(amount, price, book){
+	function bitso_save(amount, price, book, userid){
 		var toastLive = document.getElementById('liveToast');		
 		var toast = new bootstrap.Toast(toastLive);		
 		
@@ -240,7 +249,8 @@ $icon = $userData->gravatar_img;
 			option:'insert_db',
 			amount:amount,
 			price:price,
-			book:book
+			book:book,
+			userid:userid
 		}, function(response){
 			$("#message").text("Message: " + response);
 			toast.show();			

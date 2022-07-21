@@ -25,6 +25,17 @@ class Helpers
 
     }
 
+    static function isApiConfigured($userId)
+    {
+        $mysql = new MySQL();
+        $query = 'select * from wallet_config WHERE user = '.$userId;
+        if ($mysql->mySQLquery($query)){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     static function extractCurrency($book)
     {
         return substr($book, 0, strpos($book, '_'));
@@ -67,30 +78,11 @@ class Helpers
         return $mysql->mySQLquery($query);
     }
 
-    static function getListTrades()
+    static function getUserConfig($userId)
     {
         $mysql = new MySQL();
-        $query = "select book, COUNT(*) trades FROM `wallet_balance` WHERE status = 1 GROUP BY book ORDER BY trades";
+        $query = "select * FROM wallet_users a JOIN wallet_config b ON a.id = b.user WHERE a.id = ".$userId;
         return $mysql->mySQLquery($query);
-    }
-
-    static function getUserData($username)
-    {
-        $mysql = new MySQL();
-        $query = "select * from wallet_users a JOIN wallet_config b ON a.id = b.id_user 
-                  WHERE username = '$username'";
-
-        return $mysql->mySQLquery($query);
-    }
-
-    static function getAverageTrades()
-    {
-        $mysql = new MySQL();
-        $query = "select AVG(trades) average from (
-            SELECT COUNT(*) trades, date_format(date,'%u-%Y') week FROM wallet_balance GROUP BY week) tbl";
-        $result = $mysql->mySQLquery($query);
-
-        return $result[0];
     }
 
     static function getAverageHistory()

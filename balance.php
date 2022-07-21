@@ -7,21 +7,24 @@ require_once ('classes/Helpers.php');
 use classes\Helpers;
 use classes\BitsoWallet;
 
-if (!$_SESSION) {
+if (!$_SESSION || !$_SESSION['userid']) {
 	header('Location:index.php');
 }
 
 $userId = $_SESSION['userid'];
-$bitsoWallet = new BitsoWallet($userId);
-$userData = $bitsoWallet->getUserInformation();
 
-$user = $userData->first_name ." ". $userData->last_name;
-$icon = $userData->gravatar_img;
+if (!Helpers::isApiConfigured($userId)){
+	$bitsoWallet = new BitsoWallet($userId);
+	$userData = $bitsoWallet->getUserInformation();
+
+	$user = $userData->first_name ." ". $userData->last_name;
+	$icon = $userData->gravatar_img;
+}
 ?>
 
 <html>
 	<head>
-		<title>Bitso Wallet (<?=$_SESSION['name']?>)</title>
+		<title>Bitso Wallet (<?=$user?>)</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<!-- CSS only -->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" 
@@ -208,7 +211,7 @@ $icon = $userData->gravatar_img;
 
 								<div class="card-body">
 									<?php
-									$historyData = $bitsoWallet->getBalanceHistory(24);
+									//$historyData = $bitsoWallet->getBalanceHistory(24);
 
 									echo "<table class='table table-hover'>";
 									foreach($historyData as $key => $value){
@@ -285,7 +288,7 @@ const distributionChart = new Chart(ctx, {
 });
 
 <?php
-$dataChart = Helpers::getAverageHistory();
+//$dataChart = $bitsoWallet->getAverageHistory();
 foreach ($dataChart as $key => $amount) {
 	$values[$key]  = $amount->amount;
 	$labels[$key]  = $amount->newdate;
