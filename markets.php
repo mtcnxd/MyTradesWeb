@@ -9,7 +9,7 @@ use classes\BitsoWallet;
 use classes\Helpers;
 use classes\MySQL;
 
-if (!$_SESSION) {
+if (!$_SESSION || !$_SESSION['userid']) {
 	header('Location:index.php');
 }
 
@@ -20,11 +20,29 @@ if($_GET){
 }
 
 $userId = $_SESSION['userid'];
-$bitsoWallet = new BitsoWallet($userId);
-$userData = $bitsoWallet->getUserInformation();
+$user = $_SESSION['name'];
+$icon = null;
+$bitsoTicker = null;
+$prices = null;
+$ticker = null;
+$percent = null;
+$priceData = [0 => 0];
 
-$user = $userData->first_name ." ". $userData->last_name;
-$icon = $userData->gravatar_img;
+if (Helpers::isApiConfigured($userId)){
+	$bitsoWallet = new BitsoWallet($userId);
+	$userData = $bitsoWallet->getUserInformation();
+
+	$user = $userData->first_name ." ". $userData->last_name;
+	$icon = $userData->gravatar_img;
+
+	$bitsoTicker = $bitsoWallet->getFullTicker();
+	$prices 	 = $bitsoWallet->getLastBoughtPrices($book);
+	$ticker 	 = $bitsoWallet->getTicker();
+	$priceData 	 = $bitsoWallet->getChartMarketData($book, 48);	
+
+	$percent 	 = (($ticker[$book] - $prices->price)/$ticker[$book]) *100 ;
+}
+
 ?>
 
 <html>
@@ -75,43 +93,44 @@ $icon = $userData->gravatar_img;
 
 							<?php
 
-							$bitsoTicker = $bitsoWallet->getFullTicker();
-							$favorits 	 = ['btc_mxn','ltc_mxn','mana_mxn','eth_mxn','bat_mxn'];
+							$favoritesList = Helpers::getCurrencysFavorites($userId);
 
-							foreach ($bitsoTicker as $key => $value) {
+							if ($bitsoTicker){
+								foreach ($bitsoTicker as $key => $value) {
 
-								if (in_array($key, $favorits)){
+									if (in_array($key, $favoritesList)){
 
-									$change_percent = ($value['change']/ $value['last']) * 100;
-									$change_percent = number_format($change_percent, 2);
+										$change_percent = ($value['change']/ $value['last']) * 100;
+										$change_percent = number_format($change_percent, 2);
 
-									$last_buy_price = $bitsoWallet->getLastBoughtPrices($key)->price;
-									$change_24 		= $bitsoWallet->getMinimunMaximun($key);
-									$calc_entry		= (($value['last'] - $change_24->minimum)/$value['last']) *100;
+										$last_buy_price = $bitsoWallet->getLastBoughtPrices($key)->price;
+										$change_24 		= $bitsoWallet->getMinimunMaximun($key);
+										$calc_entry		= (($value['last'] - $change_24->minimum)/$value['last']) *100;
 
-									$row_down = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></td>';
+										$row_down = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg></td>';
 
-									$row_up = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00aa00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg></td>';
+										$row_up = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00aa00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-up"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg></td>';
 
-									echo "<tr>";
-									echo 	"<td><a href='?book=$key' class='link-secondary'>". $key ."</a></td>";
-									echo 	"<td class='text-end'>". convertMoney( $last_buy_price ) ."</td>";
-									echo 	"<td class='text-end'>". convertMoney( $value['last'] ) ."</td>";
-									if ($change_percent < 0){
-										echo 	"<td class='text-end text-danger'>". $change_percent .'%'. $row_down;
-									} else {
-										echo 	"<td class='text-end text-success'>". $change_percent .'%'. $row_up;
+										echo "<tr>";
+										echo 	"<td><a href='?book=$key' class='link-secondary'>". $key ."</a></td>";
+										echo 	"<td class='text-end'>". convertMoney( $last_buy_price ) ."</td>";
+										echo 	"<td class='text-end'>". convertMoney( $value['last'] ) ."</td>";
+										if ($change_percent < 0){
+											echo 	"<td class='text-end text-danger'>". $change_percent .'%'. $row_down;
+										} else {
+											echo 	"<td class='text-end text-success'>". $change_percent .'%'. $row_up;
+										}
+										echo 	"<td class='text-end'>". convertMoney( $value['low'] ) ."</td>";
+										echo 	"<td class='text-end'>". convertMoney($change_24->volume) ."</td>";
+										if ($calc_entry < 0){
+											echo 	"<td class='text-end text-danger'>". number_format( $calc_entry,2 ) ."% </td>";
+										} else {
+											echo 	"<td class='text-end text-success'>". number_format( $calc_entry,2 ) ."% </td>";
+										}
+										echo 	"<td class='text-end'>". convertMoney($change_24->minimum) ."</td>";
+										echo "</tr>";									
+
 									}
-									echo 	"<td class='text-end'>". convertMoney( $value['low'] ) ."</td>";
-									echo 	"<td class='text-end'>". convertMoney($change_24->volume) ."</td>";
-									if ($calc_entry < 0){
-										echo 	"<td class='text-end text-danger'>". number_format( $calc_entry,2 ) ."% </td>";
-									} else {
-										echo 	"<td class='text-end text-success'>". number_format( $calc_entry,2 ) ."% </td>";
-									}
-									echo 	"<td class='text-end'>". convertMoney($change_24->minimum) ."</td>";
-									echo "</tr>";									
-
 								}
 							}
 
@@ -192,19 +211,21 @@ $icon = $userData->gravatar_img;
 						</div>
 						<div class="card-body">
 							<?php
-							$prices = $bitsoWallet->getLastBoughtPrices($book);
-							$ticker = $bitsoWallet->getTicker();
-							$percent = (($ticker[$book] - $prices->price)/$ticker[$book]) *100 ;
 
-							if ($percent > 6){
-								echo "<p class='card-text text-success'>Sell ". $prices->amount ." ". extractCurrency($book) ."</p>";
+							if ($percent){
+								if ($percent > 6){
+									echo "<p class='card-text text-success'>Sell ". $prices->amount ." ". extractCurrency($book) ."</p>";
 
-							} else if ($percent < -5){
-								echo "<p class='card-text text-danger'>Buy ". $book ." price ". convertMoney($ticker[$book]) ."</p>";
+								} else if ($percent < -5){
+									echo "<p class='card-text text-danger'>Buy ". $book ." price ". convertMoney($ticker[$book]) ."</p>";
+
+								} else {
+									echo "<p class='card-text'>Waiting for buy: ". $percent ."</p>";
+
+								}	
 
 							} else {
-								echo "<p class='card-text'>Waiting for buy: ". $percent ."</p>";
-
+								echo "<p>Nothing here yet!</p>";
 							}
 
 							?>
@@ -225,7 +246,6 @@ $icon = $userData->gravatar_img;
 <script>
 
 <?php
-$priceData = $bitsoWallet->getChartMarketData($book, 48);
 foreach ($priceData as $key => $prices) {
 	$priceArray[$key]  = $prices->price;
 	$volumeArray[$key] = $prices->volume;

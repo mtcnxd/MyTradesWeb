@@ -1,22 +1,32 @@
 <?php
 session_start();
-
 require_once ('classes/functions.php');
 require_once ('classes/BitsoWallet.php'); 
+require_once ('classes/Helpers.php');
 
-use classes\MySQL;
 use classes\BitsoWallet;
+use classes\Helpers;
+use classes\MySQL;
 
-if (!$_SESSION) {
+if (!$_SESSION || !$_SESSION['userid']) {
 	header('Location:index.php');
 }
 
 $userId = $_SESSION['userid'];
-$bitsoWallet = new BitsoWallet($userId);
-$userData = $bitsoWallet->getUserInformation();
+$user = $_SESSION['name'];
+$icon = "";
+$data = null;
+$book = $_GET['book'];
 
-$user = $userData->first_name ." ". $userData->last_name;
-$icon = $userData->gravatar_img;
+if (Helpers::isApiConfigured($userId)){
+	$bitsoWallet = new BitsoWallet($userId);
+	$userData = $bitsoWallet->getUserInformation();
+
+	$user = $userData->first_name ." ". $userData->last_name;
+	$icon = $userData->gravatar_img;
+
+	$data = $bitsoWallet->getListMyCurrencies($book);
+}
 ?>
 
 <html>
@@ -37,9 +47,7 @@ $icon = $userData->gravatar_img;
 		</script>
 	</head>
 	
-	<?php
-	$book = $_GET['book'];
-	
+	<?php	
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, 'https://api.bitso.com/v3/ticker/?book='.$book);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, "true");
@@ -165,38 +173,36 @@ $icon = $userData->gravatar_img;
 							$total_amount = 0;
 							$total_bought = 0;
 							$total_value  = 0;
-		
-							$mysql = new MySQL();
-							$data = $mysql->mySQLquery("SELECT *, TIMESTAMPDIFF(HOUR, date, now()) AS time_elapsed 
-														FROM wallet_balance WHERE book = '$book' and status = 1 
-														ORDER BY price DESC");
-		
-							foreach ($data as $key => $value) {
-								$bought_value  = $value->amount * $value->price;
-								$current_value = $value->amount * $current_price;
-								$gain_lost 	   = $current_value - $bought_value;
-								$buying_date   = new DateTime($value->date);
-								
-								echo "<tr>";
-								echo 	"<td class='text-end'>". $value->amount ."</td>";
-								echo 	"<td class='text-end'>". convertMoney($value->price) ."</td>";
-								echo 	"<td class='text-end'>". convertMoney($current_price - $value->price) ."</td>";
-								echo 	"<td class='text-end'>". convertMoney($bought_value) ."</td>";				
-								echo 	"<td class='text-end'>". convertMoney($current_value) ."</td>";
-								echo 	"<td class='text-center' data-bs-toggle='tooltip' data-bs-placement='right' title='".$buying_date->format('d-m-Y h:i a')."'>". time_elapsed($value->time_elapsed) ."</td>";
-										showHtmlRow($gain_lost, $value->price, $current_price);
-								echo 	'<td class="text-center align-middle">
-											<a id="'. $value->id .'" onclick="erase(this.id)">
-												<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#777777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-											</a>
-										</td>';
-								echo "</tr>";
-								
-								$total_amount += $value->amount;						
-								$total_bought += $bought_value; 
-								$total_value  += $current_value;
-								$total_gain   += $gain_lost;
-								
+
+							if ($data){
+								foreach ($data as $key => $value) {
+									$bought_value  = $value->amount * $value->price;
+									$current_value = $value->amount * $current_price;
+									$gain_lost 	   = $current_value - $bought_value;
+									$buying_date   = new DateTime($value->date);
+									
+									echo "<tr>";
+									echo 	"<td class='text-end'>". $value->amount ."</td>";
+									echo 	"<td class='text-end'>". convertMoney($value->price) ."</td>";
+									echo 	"<td class='text-end'>". convertMoney($current_price - $value->price) ."</td>";
+									echo 	"<td class='text-end'>". convertMoney($bought_value) ."</td>";				
+									echo 	"<td class='text-end'>". convertMoney($current_value) ."</td>";
+									echo 	"<td class='text-center' data-bs-toggle='tooltip' data-bs-placement='right' title='".$buying_date->format('d-m-Y h:i a')."'>". time_elapsed($value->time_elapsed) ."</td>";
+											showHtmlRow($gain_lost, $value->price, $current_price);
+									echo 	'<td class="text-center align-middle">
+												<a id="'. $value->id .'" onclick="erase(this.id)">
+													<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#777777" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+												</a>
+											</td>';
+									echo "</tr>";
+									
+									$total_amount += $value->amount;						
+									$total_bought += $bought_value; 
+									$total_value  += $current_value;
+									$total_gain   += $gain_lost;
+									
+								}								
+
 							}	
 							?>
 						</table>

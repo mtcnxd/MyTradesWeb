@@ -12,13 +12,13 @@ switch($option){
 		$amount = $_POST["amount"];
 		$price  = $_POST["price"];
 		$book   = $_POST["book"];
-		$userId = $_POST["userId"];
+		$userId = $_POST["userid"];
 		
 		$vars = array(
 			"amount" =>"'$amount'", 
 			"price"	 =>"'$price'", 
 			"book"	 =>"'$book'",
-			"userId" =>"'$userId'"
+			"user"   =>"'$userId'"
 		);
 		
 		$exec = $mysql->mySQLinsert('wallet_balance', $vars);
@@ -26,7 +26,7 @@ switch($option){
 		if ($exec)
 			echo "El registro se guardo con exito!";
 		else 
-			echo "Ocurrio un error";
+			echo "Ocurrio un error: ";
 
 	break;
 	
@@ -58,18 +58,33 @@ switch($option){
 
 	case 'save_favorit':
 		$book   = $_POST["book"];
+		$status = $_POST["status"];
 		
 		$vars = array(
-			"book"	 =>"'$book'"
+			"status" => $status == 'true' ? 'checked' : null
 		);
 		
-		$exec = $mysql->mySQLinsert('wallet_balance', $vars);
-		
-		if ($exec)
-			echo "El registro se guardo con exito!";
+		if ($mysql->mySQLupdate("wallet_favorites", $vars, "book = '$book'"))
+			echo "El registro se guardo con exito! ". $mysql->getQueryResult();
 		else 
-			echo "Ocurrio un error";
+			echo "Ocurrio un error: ". $mysql->getQueryResult();
 
+	break;
+
+	case 'save_config':
+		$user 		 = $_POST["user"];
+		$bitsoKey    = $_POST["bitsoKey"];
+		$bitsoSecret = $_POST["bitsoSecret"];
+		
+		$vars = array(
+			"bitso_key"	  =>"$bitsoKey", 
+			"bitso_secret" =>"$bitsoSecret"
+		);
+		
+		if ($mysql->mySQLupdate('wallet_config', $vars, 'user = '.$user))
+			echo "La configuracion se guardo con exito!";
+		else 
+			echo "Ocurrio un error: ". var_dump($vars);
 	break;
 
 	case 'cancell_order':

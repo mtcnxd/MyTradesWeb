@@ -12,13 +12,21 @@ if (!$_SESSION || !$_SESSION['userid']) {
 }
 
 $userId = $_SESSION['userid'];
+$user = $_SESSION['name'];
+$icon = null;
+$balance_array = null;
 
-if (!Helpers::isApiConfigured($userId)){
+if (Helpers::isApiConfigured($userId)){
 	$bitsoWallet = new BitsoWallet($userId);
 	$userData = $bitsoWallet->getUserInformation();
 
+	$dataChart = $bitsoWallet->getAverageHistory();	
+	$historyData = $bitsoWallet->getBalanceHistory(24);
+
 	$user = $userData->first_name ." ". $userData->last_name;
 	$icon = $userData->gravatar_img;
+
+	$balance_array = $bitsoWallet->getWalletBalances();
 }
 ?>
 
@@ -73,25 +81,26 @@ if (!Helpers::isApiConfigured($userId)){
 						$value_total   = 0;
 						$buy_power     = 0;
 						$chart_data    = array();
-						$balance_array = $bitsoWallet->getWalletBalances();
-						
-						foreach ($balance_array as $balance){
-							$chart_data[$balance['currency']] = $balance['value'];
-							$value_total += $balance['value'];
 
-							if ($balance['currency'] == 'mxn' || $balance['currency'] == 'usd'){
-								$buy_power += $balance['value'];
-							} 
+						if ($balance_array){
+							foreach ($balance_array as $balance){
+								$chart_data[$balance['currency']] = $balance['value'];
+								$value_total += $balance['value'];
 
-							echo "<li class='list-group-item list-group-item-action'>";
-							echo "	<div class='ms-2'>
-								  		<div class='fw-bold text-uppercase'>". $balance['currency'] ."</div>
-										<div class='row'>
-											<div class='col-md-6'>". $balance['amount'] ."</div>
-											<div class='col-md-6 text-end'>". convertMoney($balance['value']) ."</div>
-										</div> 
-							  		</div>";
-							echo "</li>";
+								if ($balance['currency'] == 'mxn' || $balance['currency'] == 'usd'){
+									$buy_power += $balance['value'];
+								} 
+
+								echo "<li class='list-group-item list-group-item-action'>";
+								echo "	<div class='ms-2'>
+									  		<div class='fw-bold text-uppercase'>". $balance['currency'] ."</div>
+											<div class='row'>
+												<div class='col-md-6'>". $balance['amount'] ."</div>
+												<div class='col-md-6 text-end'>". convertMoney($balance['value']) ."</div>
+											</div> 
+								  		</div>";
+								echo "</li>";
+							}
 						}
 						
 						$buy_power_percent = ($buy_power/$value_total) * 100;
@@ -211,8 +220,6 @@ if (!Helpers::isApiConfigured($userId)){
 
 								<div class="card-body">
 									<?php
-									//$historyData = $bitsoWallet->getBalanceHistory(24);
-
 									echo "<table class='table table-hover'>";
 									foreach($historyData as $key => $value){
 										$newDate = new DateTime($value->date);
@@ -288,7 +295,6 @@ const distributionChart = new Chart(ctx, {
 });
 
 <?php
-//$dataChart = $bitsoWallet->getAverageHistory();
 foreach ($dataChart as $key => $amount) {
 	$values[$key]  = $amount->amount;
 	$labels[$key]  = $amount->newdate;

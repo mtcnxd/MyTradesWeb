@@ -29,8 +29,11 @@ class Helpers
     {
         $mysql = new MySQL();
         $query = 'select * from wallet_config WHERE user = '.$userId;
-        if ($mysql->mySQLquery($query)){
-            return true;
+
+        if ($result = $mysql->mySQLquery($query)[0]){
+            if ($result->bitso_key != "" and $result->bitso_secret != "")
+                return true;
+
         } else {
             return false;
         }
@@ -45,6 +48,26 @@ class Helpers
     {
         $money = number_format($number, 2);
         return "$". $money;
+    }
+
+    static function getCurrencysFavoritesList($userId)
+    {
+        $mysql = new MySQL();
+        $query = "select * from wallet_favorites where user = ".$userId;
+        return $mysql->mySQLquery($query);
+    }    
+
+    static function getCurrencysFavorites($userId)
+    {
+        $mysql = new MySQL();
+        $query = "select * from wallet_favorites where status = 'checked' and user = ".$userId;
+        $favoritesChecked = $mysql->mySQLquery($query);
+
+        foreach ($favoritesChecked as $key => $value) {
+            $favoritesList[] = $value->book;
+        }
+
+        return $favoritesList;
     }
 
     static function time_elapsed($hours)
@@ -71,29 +94,11 @@ class Helpers
         return $string;
     }
 
-    static function getCurrencysFavorites()
-    {
-        $mysql = new MySQL();
-        $query = 'select * from wallet_favorites';
-        return $mysql->mySQLquery($query);
-    }
-
     static function getUserConfig($userId)
     {
         $mysql = new MySQL();
         $query = "select * FROM wallet_users a JOIN wallet_config b ON a.id = b.user WHERE a.id = ".$userId;
         return $mysql->mySQLquery($query);
-    }
-
-    static function getAverageHistory()
-    {
-        $mysql = new MySQL();
-        $sql = "select * from (
-                    select avg(amount) amount, date_format(date, '%Y-%m-%d') as newdate 
-                    from wallet_performance group by newdate order by date desc limit 60
-                ) tbl order by newdate asc";
-        
-        return $mysql->mySQLquery($sql);
     }
 
     static function openLogfile()

@@ -13,19 +13,18 @@ if (!$_SESSION || !$_SESSION['userid']) {
 
 $userId = $_SESSION['userid'];
 
+$user = $_SESSION['name'];
+$icon = null;
 $orders = null;
 $trades = null;
 
-if (!Helpers::isApiConfigured($userId)){
+if (Helpers::isApiConfigured($userId)){
 	$bitsoWallet = new BitsoWallet($userId);
 	$userData = $bitsoWallet->getUserInformation();
 
 	if ($userData){
 		$user = $userData->first_name ." ". $userData->last_name;
 		$icon = $userData->gravatar_img;	
-	} else {
-		$user = $_SESSION['name'];
-		$icon = null;
 	}
 
 	$orders  = $bitsoWallet->getOpenOrders();

@@ -29,6 +29,12 @@ class Bitso {
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: '. $authHeader,'Content-Type: application/json'));
 		$response = curl_exec($ch);
 
+		$json = json_decode($response);
+
+		if(isset($json->error)){
+			var_dump($json->error->message);
+		}
+
 		return $response;
 	}
 
@@ -36,9 +42,7 @@ class Bitso {
 	{
 		$payload = $this->getBitsoRequest('/v3/account_status/');
 		$json = json_decode($payload);
-		if (isset($json->payload)){
-			return $json->payload;
-		}
+		return $json->payload;
 	}
 
 
@@ -51,15 +55,13 @@ class Bitso {
 		$currencys = array();		
 
 		foreach ($ticker as $value) {
-			if( strpos($value->book, "_mxn") or strpos($value->book, "_usd") ){
-				$currencys[$value->book] = [
-					"last"   => $value->last,
-					"high"   => $value->high,
-					"low"    => $value->low,
-					"volum"  => $value->volume,
-					"change" => $value->change_24
-				];
-			}
+			$currencys[$value->book] = [
+				"last"   => $value->last,
+				"high"   => $value->high,
+				"low"    => $value->low,
+				"volum"  => $value->volume,
+				"change" => $value->change_24
+			];
 		}
 
 		return $currencys;

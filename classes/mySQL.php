@@ -1,4 +1,5 @@
 <?php
+
 namespace classes;
 
 class DataBase
@@ -78,6 +79,7 @@ class MySQL {
 	protected $password = 'IrSW8=m)W$9U';
 	protected $database = 'fortechm_test';
 	protected $connect;
+	protected $queryResult;
 	
 	public function __construct()
 	{
@@ -99,8 +101,8 @@ class MySQL {
 	{
 		$query  = "INSERT INTO ". $tbl ."(" ;
 		$query .= implode(', ', array_keys($data)) . ") VALUES (". implode(',', array_values($data)).")";
-		$exec   = mysqli_query($this->connect, $query);
-		if ($exec){
+
+		if ( mysqli_query($this->connect, $query) ){
 			return TRUE;
 		} else {
 			return FALSE;
@@ -146,14 +148,20 @@ class MySQL {
 			$item[] = $key  ." = '". $value ."'";
 		}
 		$query .= implode (',',$item);
-		$query .= " WHERE " . $where; 
+		$query .= " WHERE " . $where;
 
-		try {
-			mysqli_query($this->connect, $query);			
-		} catch(Exception $e) {
-			throw new Exception ('Error insertando registro');
+		$this->queryResult = $query;
+
+		if (mysqli_query($this->connect, $query)){
+			return true;
 		}
+		return false;
 
+	}
+
+	public function getQueryResult()
+	{
+		return $this->queryResult;
 	}
 
 }

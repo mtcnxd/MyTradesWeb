@@ -11,7 +11,6 @@ Almacena los datos del balance de la cartera
 */
 
 $bitsoWallet = new BitsoWallet(1);
-
 $balances_array = $bitsoWallet->getAccountBalance();
 $latestBalance  = $bitsoWallet->getLatestBalance();
 $currentBalance = array_sum(array_values($balances_array));
@@ -25,7 +24,7 @@ if ($walletChange <= -1.2){
 }
 
 $mysql = new MySQL();
-$query = "INSERT INTO wallet_performance(amount, difference) VALUES ('$currentBalance', '$walletChange')";
+$query = "INSERT INTO wallet_performance(user, amount, difference) VALUES (1, '$currentBalance', '$walletChange')";
 $mysql->mySQLquery($query);
 
 /*
@@ -33,6 +32,7 @@ Almacena los datos para el analisis de compras
 */
 
 $favorits = ['btc_mxn','bch_mxn','ltc_mxn','mana_mxn','bat_mxn','eth_mxn'];
+
 $markets  = $bitsoWallet->getFullTicker();
 
 foreach ($markets as $book => $price) {

@@ -35,6 +35,27 @@ class BitsoWallet extends Bitso
 		return $mysql->mySQLquery($query);
 	}
 
+    public function getAverageHistory()
+    {
+        $mysql = new MySQL();
+        $sql = "select * from (
+                    select avg(amount) amount, date_format(date, '%Y-%m-%d') as newdate 
+                    from wallet_performance where user = ".$this->user." group by newdate order by date desc limit 60
+                ) tbl order by newdate asc";
+        
+        return $mysql->mySQLquery($sql);
+    }
+
+    public function getListMyCurrencies($book)
+    {
+		$mysql = new MySQL();
+		$query = "Select *, TIMESTAMPDIFF(HOUR, date, now()) AS time_elapsed 
+				FROM wallet_balance WHERE book = '$book' and user = ".$this->user." and status = 1 
+				ORDER BY price DESC";
+
+		return $mysql->mySQLquery($query);
+    }
+
 	public function getLatestBalance()
 	{
 		$mysql = new MySQL();
@@ -208,7 +229,8 @@ class BitsoWallet extends Bitso
 	public function getListTrades()
     {
         $mysql = new MySQL();
-        $query = "select book, COUNT(*) trades FROM `wallet_balance` WHERE status = 1 and user = ".$this->user." GROUP BY book ORDER BY trades";
+        $query = "select book, COUNT(*) trades FROM `wallet_balance` 
+        	WHERE status = 1 and user = ".$this->user." GROUP BY book ORDER BY trades";
         return $mysql->mySQLquery($query);
     }
 

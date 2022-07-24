@@ -13,22 +13,29 @@ if (!$_SESSION || !$_SESSION['userid']) {
 }
 
 $userId = $_SESSION['userid'];
-$bitsoWallet = new BitsoWallet($userId);
-$userData = $bitsoWallet->getUserInformation();
+$user = $_SESSION['name'];
+$icon = null;
+$result = null;
+$data = array();
+$chart_data = array();
 
-if ($userData){
-	$user = $userData->first_name ." ". $userData->last_name;
-	$icon = $userData->gravatar_img;	
-} else {
-	$user = $_SESSION['name'];
-	$icon = null;
-}
+if (Helpers::isApiConfigured($userId)){
+	$bitsoWallet = new BitsoWallet($userId);
+	$userData = $bitsoWallet->getUserInformation();
 
-$ticker_array = $bitsoWallet->getFullTicker();
-	
-foreach ($ticker_array as $key => $value) {
-	$currencys_prices[$key] = $value['last'];
-	$currencys_percen[$key] = $value['change'];
+	if ($userData){
+		$user = $userData->first_name ." ". $userData->last_name;
+		$icon = $userData->gravatar_img;	
+	}
+
+	$result = $bitsoWallet->getCurrencysBought();
+	$data   = $bitsoWallet->getChartPerformance();
+	$ticker_array = $bitsoWallet->getFullTicker();
+		
+	foreach ($ticker_array as $key => $value) {
+		$currencys_prices[$key] = $value['last'];
+		$currencys_percen[$key] = $value['change'];
+	}
 }
 
 ?>
@@ -83,32 +90,31 @@ foreach ($ticker_array as $key => $value) {
 							$t_bought = 0;
 							$t_gain_lost = 0;
 
-							$result = $bitsoWallet->getCurrencysBought();
-							
-							foreach ($result as $bought) {
-								$change 	   = $currencys_percen[$bought->book]/$currencys_prices[$bought->book] * 100;
-								$current_value = $currencys_prices[$bought->book] * $bought->amount;
-								$gain_lost 	   = ($current_value - $bought->value);
-								
-								echo "<tr>";
-								echo 	"<td class='text-center'>
-											<img src='currencys/$bought->file' width='20px' height='20px'></td>";
-								echo 	"<td>
-											<a href='currentbook.php?book=$bought->book' class='link-secondary'>". $bought->book ."</a>
-										</td>";
-								echo 	"<td class='text-end'>". number_format($bought->amount,8)."</td>";
-								echo 	"<td class='text-end'>". convertMoney($currencys_prices[$bought->book]) ."</td>";
-								echo 	"<td class='text-end'>". number_format($change,2)."% "; icon_percent($change) ."</td>";
-								echo 	"<td class='text-end'>". convertMoney($bought->value) ."</td>";
-								echo 	"<td class='text-end'>". convertMoney($current_value) ."</td>";
-										showHtmlRow($gain_lost, $bought->value, $current_value);
-								echo "</tr>";
-								
-								$t_value 	 += $bought->value;
-								$t_bought	 += $current_value;
-								$t_gain_lost += $gain_lost;
+							if ($result){
+								foreach ($result as $bought) {
+									$change 	   = $currencys_percen[$bought->book]/$currencys_prices[$bought->book] * 100;
+									$current_value = $currencys_prices[$bought->book] * $bought->amount;
+									$gain_lost 	   = ($current_value - $bought->value);
+									
+									echo "<tr>";
+									echo 	"<td class='text-center'>
+												<img src='currencys/$bought->file' width='20px' height='20px'></td>";
+									echo 	"<td>
+												<a href='currentbook.php?book=$bought->book' class='link-secondary'>". $bought->book ."</a>
+											</td>";
+									echo 	"<td class='text-end'>". number_format($bought->amount,8)."</td>";
+									echo 	"<td class='text-end'>". convertMoney($currencys_prices[$bought->book]) ."</td>";
+									echo 	"<td class='text-end'>". number_format($change,2)."% "; icon_percent($change) ."</td>";
+									echo 	"<td class='text-end'>". convertMoney($bought->value) ."</td>";
+									echo 	"<td class='text-end'>". convertMoney($current_value) ."</td>";
+											showHtmlRow($gain_lost, $bought->value, $current_value);
+									echo "</tr>";
+									
+									$t_value 	 += $bought->value;
+									$t_bought	 += $current_value;
+									$t_gain_lost += $gain_lost;
+								}
 							}
-
 							?>
 							<tr>
 								<td>&nbsp;</td>
@@ -134,10 +140,11 @@ foreach ($ticker_array as $key => $value) {
 								<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart-2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
 							</div>
 							<?php
-							$data = $bitsoWallet->getChartPerformance();
 
-							foreach ($data as $key => $chart) {
-								$chart_data[$chart->date] = $chart->amount;
+							if ($data){
+								foreach ($data as $chart) {
+									$chart_data[$chart->date] = $chart->amount;
+								}
 							}
 
 				    		$min = select_min();

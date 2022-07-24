@@ -12,20 +12,21 @@ if (!$_SESSION || !$_SESSION['userid']) {
 }
 
 $userId = $_SESSION['userid'];
+$user = $_SESSION['name'];
+$icon = "";
 
-if (!Helpers::isApiConfigured($userId)){
+$listTrades = null;
+
+if (Helpers::isApiConfigured($userId)){
 	$bitsoWallet = new BitsoWallet($userId);
 	$userData = $bitsoWallet->getUserInformation();
-
-	var_dump($userData);
 
 	if ($userData){
 		$user = $userData->first_name ." ". $userData->last_name;
 		$icon = $userData->gravatar_img;	
-	} else {
-		$user = $_SESSION['name'];
-		$icon = "";
-	}	
+	}
+
+	$listTrades = $bitsoWallet->getListTrades();
 }
 
 $notify1 = null;
@@ -81,14 +82,14 @@ if ($userConfig){
 								<div class="mb-3">
 									<label for="name" class="form-label">Bitso name</label>
 									<input type="text" name="name" id="name" value="<?=$user;?>" class="form-control" disabled>
-								</div>								
-								<div class="mb-3">
-									<label for="username" class="form-label">Username</label>
-									<input type="text" name="username" id="username" value="<?=$_SESSION['name']?>" class="form-control">
 								</div>
 								<div class="mb-3">
 									<label for="email" class="form-label">Email</label>
 									<input type="text" name="email" id="email" value="<?=$_SESSION['email']?>" class="form-control" >
+								</div>
+								<div class="mb-3">
+									<label for="username" class="form-label">Username</label>
+									<input type="text" name="username" id="username" value="<?=$_SESSION['name']?>" class="form-control">
 								</div>
 								<div class="mb-3">
 									<label for="password" class="form-label">New password</label>
@@ -132,7 +133,7 @@ if ($userConfig){
 								    <label class="form-check-label" for="sendnotify">Auto buy status</label>
 								</div>
 								<div class="mb-3">
-									<input type="button" id="confirm" value="Save" onclick="saveConfig()" class="btn btn-primary" >
+									<input type="button" id="confirm" value="Save" onclick="save_config(<?=$userId?>)" class="btn btn-primary" >
 								</div>
 							</form>
 						</div>
@@ -152,8 +153,6 @@ if ($userConfig){
 						<div class="card-body">
 							<ul class="list-group list-group-flush">
 								<?php
-								$listTrades = $bitsoWallet->getListTrades();
-
 								if (!$listTrades){
 									echo "<p>Nothing here yet!</p>";
 								} else {
@@ -177,25 +176,35 @@ if ($userConfig){
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill-rule="evenodd" d="M5 3.75C5 2.784 5.784 2 6.75 2h10.5c.966 0 1.75.784 1.75 1.75v17.5a.75.75 0 01-1.218.586L12 17.21l-5.781 4.625A.75.75 0 015 21.25V3.75zm1.75-.25a.25.25 0 00-.25.25v15.94l5.031-4.026a.75.75 0 01.938 0L17.5 19.69V3.75a.25.25 0 00-.25-.25H6.75z"></path></svg>
 						</div>
 
-						<div class="p-4">
-							<form action="" method="post" name="configuration">
-								<ul class="list-group list-group-flush mb-3">
-								<?php
-								$favorites = Helpers::getCurrencysFavorites();
+						<div class="card-body">
+							<ul class="list-group list-group-flush">
+							<?php
+							$favorites = Helpers::getCurrencysFavoritesList($userId);
+
+							if (!$favorites){
+								echo "<p>Nothing here yet!</p>";
+							} else {
+								echo '<form action="" method="post" name="configuration">';
 								foreach ($favorites as $data) {
 									echo '<li class="list-group-item">';
 									echo '<div class="form-check form-switch">
-											  <input class="form-check-input" type="checkbox" role="switch" id="'.$data->book.'" onclick="save_favorit(this.id)" checked>
+											  <input class="form-check-input" type="checkbox" '.$data->status.' role="switch" id="'.$data->book.'" onclick="save_favorit(this.id, this.checked)">
 											  <label class="form-check-label" for="'.$data->book.'">'.$data->book.'</label>
 										  </div>';
 									echo '</li>';
 								}
+								echo '</form>';
+							}
+							?>							
+							</ul>
 
-								?>							
-								</ul>
-													
+							<form>
 								<div class="mb-3">
-									<input type="button" id="confirm" value="Save" class="btn btn-primary" >
+									<label for="book" class="form-label">Add new favorit</label>
+									<input type="text" name="book" id="book" class="form-control" placeholder="btc_mxn">
+								</div>
+								<div class="mb-3">
+									<input type="button" id="confirm" value="Add" class="btn btn-primary" >
 								</div>
 							</form>
 						</div>
@@ -205,24 +214,6 @@ if ($userConfig){
 
 			</div> 	<!-- Row -->
 		</div>	<!-- Container -->
-
-		<!-- Modal -->
-		<div class="modal fade" id="modal_books" tabindex="-1" aria-labelledby="modal_books" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered">
-				<div class="modal-content">
-					<div class="modal-header">
-						<h6 class="modal-title text-uppercase" id="modal_title">Last boughts</h6>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-					</div>
-					<div class="modal-body">
-						<div id="modalBooksContent"></div>	
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
 		
 		<!-- Toast -->
 		<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
@@ -243,27 +234,23 @@ if ($userConfig){
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script language="JavaScript">
 
-function saveConfig()
+function save_config(user)
 {
-	var bitsoKey = $("#bitsoKey").val();
+	var bitsoKey 	= $("#bitsoKey").val();
 	var bitsoSecret = $("#bitsoSecret").val();
-
-	console.log(bitsoKey);
-	console.log(bitsoSecret);
-}
+	var toastLive = document.getElementById('liveToast');		
+	var toast = new bootstrap.Toast(toastLive);		
 	
-function open_book_details(book, button)
-{
-	var modalBooks = new bootstrap.Modal(document.getElementById('modal_books'));
-	var modalTitle = $("#modal_title");
-
-	$("#modalBooksContent").load('backend.php', {
-		option:'modal_books',
-		book:book
-	}, function (){
-		modalTitle.text ('Book (' + book.replace("_", " / ") + ')') ;
-		modalBooks.show();
+	$.post("backend.php",{
+		option:'save_config',
+		user:user,
+		bitsoKey:bitsoKey,
+		bitsoSecret:bitsoSecret
+	}, function(response){
+		$("#message").text("Message: " + response);
+		toast.show();					
 	});
+	
 }
 
 function bitso_save(amount, price, book)
@@ -282,17 +269,22 @@ function bitso_save(amount, price, book)
 	});
 }
 
-function save_favorit(book)
+function save_favorit(book, status)
 {
+	var toastLive = document.getElementById('liveToast');		
+	var toast = new bootstrap.Toast(toastLive);
+
+	console.log(status);
+
 	$.post("backend.php",{
 		option:'save_favorit',
-		book:book
+		book:book,
+		status:status
 
 	}, function(response){
 		$("#message").text("Message: " + response);
 		toast.show();			
 	});
 }
-
 
 </script>

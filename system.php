@@ -13,17 +13,16 @@ if (!$_SESSION || !$_SESSION['userid']) {
 }
 
 $userId = $_SESSION['userid'];
+$user = $_SESSION['name'];
+$icon = "";
 
-if (!Helpers::isApiConfigured($userId)){
+if (Helpers::isApiConfigured($userId)){
 	$bitsoWallet = new BitsoWallet($userId);
 	$userData = $bitsoWallet->getUserInformation();
 
 	if ($userData){
 		$user = $userData->first_name ." ". $userData->last_name;
 		$icon = $userData->gravatar_img;	
-	} else {
-		$user = $_SESSION['name'];
-		$icon = "";
 	}
 }
 
@@ -31,7 +30,7 @@ if (!Helpers::isApiConfigured($userId)){
 
 <html>
 	<head>
-		<title>Bitso Wallet (<?=$_SESSION['name']?>)</title>
+		<title>Bitso Wallet (<?=$userId?>)</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<!-- CSS only -->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" 
