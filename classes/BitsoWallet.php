@@ -59,7 +59,7 @@ class BitsoWallet extends Bitso
 	public function getLatestBalance()
 	{
 		$mysql = new MySQL();
-		$query = "SELECT * FROM wallet_performance ORDER BY date DESC LIMIT 1";
+		$query = "Select * FROM wallet_performance where user = ".$this->user." ORDER BY date DESC LIMIT 1";
 		$data  = $mysql->mySQLquery($query);
 
 		$last_balance = 0;
@@ -72,7 +72,7 @@ class BitsoWallet extends Bitso
 	public function getCurrentChange($current_balance)
 	{
 		$mysql = new MySQL();
-		$query = "SELECT * FROM wallet_performance ORDER BY id DESC LIMIT 1";
+		$query = "Select * FROM wallet_performance where user = ".$this->user." ORDER BY id DESC LIMIT 1";
 		$data  = $mysql->mySQLquery($query);
 
 		if(!empty($data)){
@@ -89,7 +89,7 @@ class BitsoWallet extends Bitso
 	{
 		$mysql = new MySQL();
 		$query = "Select AVG(trades) average FROM (
-			SELECT COUNT(*) trades, date_format(date,'%u-%Y') week FROM wallet_balance GROUP BY week) tbl";
+			SELECT COUNT(*) trades, date_format(date,'%u-%Y') week FROM wallet_balance where user = ".$this->user." GROUP BY week) tbl";
 		$result = $mysql->mySQLquery($query);
 
 		return $result[0]->average;
@@ -98,8 +98,8 @@ class BitsoWallet extends Bitso
 	public function getPerformanceIntime($time_elapsed = 12)
 	{	
 		$mysql = new MySQL();
-		$query = "SELECT SUM(difference) as performance FROM (
-					SELECT difference FROM wallet_performance ORDER BY date DESC LIMIT $time_elapsed) as AVG";
+		$query = "select SUM(difference) as performance FROM (
+					SELECT difference FROM wallet_performance where user = ".$this->user." ORDER BY date DESC LIMIT $time_elapsed) as AVG";
 		$result = $mysql->mySQLquery($query);
 
 		return number_format($result[0]->performance, 2);
@@ -108,14 +108,14 @@ class BitsoWallet extends Bitso
 	public function getLastBoughtPrices($book = 'btc_mxn')
 	{
 		$mysql = new MySQL();
-		$sql = "select * from wallet_balance where book = '$book' order by date desc limit 1";
+		$sql = "select * from wallet_balance where book = '$book' and user = ".$this->user." order by date desc limit 1";
 		return $mysql->mySQLquery($sql)[0];
 	}
 
 	public function getOldestBuy(){
 		$mysql = new MySQL();
-		$query = "SELECT *, TIMESTAMPDIFF(HOUR, date, now()) as elapsed FROM wallet_balance a 
-				  JOIN wallet_currencys b ON a.book = b.book ORDER by date ASC LIMIT 1";
+		$query = "select *, TIMESTAMPDIFF(HOUR, date, now()) as elapsed FROM wallet_balance a 
+				  JOIN wallet_currencys b ON a.book = b.book where user = ".$this->user." ORDER by date ASC LIMIT 1";
 		$data  = $mysql->mySQLquery($query);
 
 		$text  = $this->convertTimeToText($data[0]->elapsed);
@@ -142,7 +142,7 @@ class BitsoWallet extends Bitso
 		$ticker   = $this->getTicker();
 
 		$balanceValue = array();
-		foreach ($balances as $key => $value) {
+		foreach ($balances as $value) {
 
 			$book = $value->currency.'_mxn';
 
@@ -152,7 +152,7 @@ class BitsoWallet extends Bitso
 					'amount'   => $value->total,
 					'value'    => $value->total,
 				];
-			} else if ($value->total > 0.002){
+			} else if ($value->total > 0.0002){
 				if( array_key_exists($book, $ticker) ){
 					$balanceValue[] = [
 						'currency' => $value->currency,

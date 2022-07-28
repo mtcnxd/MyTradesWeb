@@ -10,22 +10,25 @@ use classes\MySQL;
 Almacena los datos del balance de la cartera
 */
 
-$bitsoWallet = new BitsoWallet(1);
-$balances_array = $bitsoWallet->getAccountBalance();
-$latestBalance  = $bitsoWallet->getLatestBalance();
-$currentBalance = array_sum(array_values($balances_array));
+for ($i=1; $i<=2; $i++) {
+	$bitsoWallet    = new BitsoWallet($i);
+	$balances_array = $bitsoWallet->getAccountBalance();
+	$latestBalance  = $bitsoWallet->getLatestBalance();
+	$currentBalance = array_sum(array_values($balances_array));
 
-$walletChange = (($currentBalance - $latestBalance) / $currentBalance) * 100;
-$walletChange = number_format($walletChange, 2);
+	$walletChange = (($currentBalance - $latestBalance) / $currentBalance) * 100;
+	$walletChange = number_format($walletChange, 2);
 
-if ($walletChange <= -1.2){
-	$data = [ 'Change' => $walletChange ];
-	$bitsoWallet->sendWebHook('BitsoWallet', $data);
+	if ($walletChange <= -1.2){
+		$data = [ 'Change' => $walletChange ];
+		$bitsoWallet->sendWebHook('BitsoWallet', $data);
+	}
+
+	$mysql = new MySQL();
+	$query = "INSERT INTO wallet_performance(user, amount, difference) VALUES ($i, '$currentBalance', '$walletChange')";
+	$mysql->mySQLquery($query);
 }
 
-$mysql = new MySQL();
-$query = "INSERT INTO wallet_performance(user, amount, difference) VALUES (1, '$currentBalance', '$walletChange')";
-$mysql->mySQLquery($query);
 
 /*
 Almacena los datos para el analisis de compras

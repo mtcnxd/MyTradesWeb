@@ -23,6 +23,8 @@ if (Helpers::isApiConfigured($userId)){
 	$dataChart = $bitsoWallet->getAverageHistory();	
 	$historyData = $bitsoWallet->getBalanceHistory(24);
 
+	var_dump($dataChart);
+
 	$user = $userData->first_name ." ". $userData->last_name;
 	$icon = $userData->gravatar_img;
 
