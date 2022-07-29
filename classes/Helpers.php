@@ -114,35 +114,12 @@ class Helpers
         return $fcontent;
     }
 
-    static function getLastPriceChange()
-    {
-        $mysql = new MySQL();
-        $query = "select * from wallet_performance ORDER BY id DESC LIMIT 2";
-        $data  = $mysql->mySQLquery($query);
-        
-        $values = array();
-
-        if (!empty($data)){
-            foreach ($data as $key => $value) {
-                $values[$key] = $value->amount;
-            }
-
-            $current_price  = $values[0];
-            $last_price     = $values[1];
-            
-            $change = (($current_price - $last_price) / $current_price) * 100;
-            $change = number_format($change, 2);
-
-            return $change;     
-        }
-
-    }
-
-    static function getOldestBuy()
+    static function getOldestBuy($user)
     {
         $mysql = new MySQL();
         $query = "select *, TIMESTAMPDIFF(HOUR, date, now()) as elapsed FROM wallet_balance a 
-                  JOIN wallet_currencys b ON a.book = b.book WHERE a.status = true ORDER by date ASC LIMIT 1";
+                  JOIN wallet_currencys b ON a.book = b.book WHERE a.status = true 
+                  and  a.user = ".$user." ORDER by date ASC LIMIT 1";
         
         return $mysql->mySQLquery($query)[0];
     }

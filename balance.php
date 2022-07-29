@@ -23,8 +23,6 @@ if (Helpers::isApiConfigured($userId)){
 	$dataChart = $bitsoWallet->getAverageHistory();	
 	$historyData = $bitsoWallet->getBalanceHistory(24);
 
-	var_dump($dataChart);
-
 	$user = $userData->first_name ." ". $userData->last_name;
 	$icon = $userData->gravatar_img;
 
@@ -162,7 +160,7 @@ if (Helpers::isApiConfigured($userId)){
 												Current performance
 											</h6>
 											<h5 class="card-subtitle mb-2 fs-6">
-												<?=getCurrentChange($value_total) .'%';?>
+												<?=getCurrentChange($value_total, $userId) .'%';?>
 											</h5>			
 										</div>
 										<div class="col-auto">					
@@ -220,7 +218,7 @@ if (Helpers::isApiConfigured($userId)){
 									<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
 								</div>
 
-								<div class="card-body">
+								<div class="card-body overflow-scroll" style="height:550px;">
 									<?php
 									echo "<table class='table table-hover'>";
 									foreach($historyData as $key => $value){

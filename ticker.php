@@ -16,6 +16,7 @@ $userId = $_SESSION['userid'];
 $user = $_SESSION['name'];
 $icon = null;
 $result = null;
+$lastChange = null;
 $data = array();
 $chart_data = array();
 
@@ -31,6 +32,7 @@ if (Helpers::isApiConfigured($userId)){
 	$result = $bitsoWallet->getCurrencysBought();
 	$data   = $bitsoWallet->getChartPerformance();
 	$ticker_array = $bitsoWallet->getFullTicker();
+	$lastChange = $bitsoWallet->getLastPriceChange();
 		
 	foreach ($ticker_array as $key => $value) {
 		$currencys_prices[$key] = $value['last'];
@@ -67,12 +69,12 @@ if (Helpers::isApiConfigured($userId)){
 			<div class="col-md-12 shadow-sm mb-4 bg-white">
 				<div class="card border-custom">
 					<div class="card-header">
-						<h6 class="card-header-title">Ticker</h6>
+						<h6 class="card-header-title">Your Assets</h6>
 						<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
 					</div>				
 					
 					<div class="table-responsive">
-						<table class="table table-borderless table-hover fs-6">
+						<table class="table table-bg table-borderless table-hover fs-6">
 							<thead>
 								<tr class="table-custom text-uppercase fs-7">
 									<th scope="col"></th>
@@ -97,11 +99,8 @@ if (Helpers::isApiConfigured($userId)){
 									$gain_lost 	   = ($current_value - $bought->value);
 									
 									echo "<tr>";
-									echo 	"<td class='text-center'>
-												<img src='currencys/$bought->file' width='20px' height='20px'></td>";
-									echo 	"<td>
-												<a href='currentbook.php?book=$bought->book' class='link-secondary'>". $bought->book ."</a>
-											</td>";
+									echo 	"<td class='text-center'><img src='currencys/$bought->file' width='20px' height='20px'></td>";
+									echo 	"<td><a href='currentbook.php?book=$bought->book' class='link-dark'>".$bought->currency."</a><span class='text-muted'> (". $bought->book .")</span></td>";
 									echo 	"<td class='text-end'>". number_format($bought->amount,8)."</td>";
 									echo 	"<td class='text-end'>". convertMoney($currencys_prices[$bought->book]) ."</td>";
 									echo 	"<td class='text-end'>". number_format($change,2)."% "; icon_percent($change) ."</td>";
@@ -147,8 +146,8 @@ if (Helpers::isApiConfigured($userId)){
 								}
 							}
 
-				    		$min = select_min();
-							$max = select_max();
+				    		$min = select_min($userId);
+							$max = select_max($userId);
 							?>					
 							<canvas class="p-3" id="myChart" width="250" height="100"></canvas>
 						</div>
@@ -206,7 +205,7 @@ if (Helpers::isApiConfigured($userId)){
 										<div class="col">
 									    	<h6 class="card-title text-muted text-uppercase fs-7">
 									    		<?php
-									    		$oldest_buy = Helpers::getOldestBuy();
+									    		$oldest_buy = Helpers::getOldestBuy($userId);
 												echo "Oldest buy: ". $oldest_buy->currency ." (". $oldest_buy->book .")";
 									    		?>
 									    	</h6>
@@ -231,7 +230,11 @@ if (Helpers::isApiConfigured($userId)){
 									    		Last wallet performance
 									    	</h6>
 									    	<h5 class="card-subtitle mb-2 fs-6">
-									    		<?=Helpers::getLastPriceChange().' %';?>
+									    		<?php
+												if($lastChange){
+													echo $lastChange;
+												}
+												?>
 									    	</h5>
 								    	</div>
 								    	<div class="col-auto">

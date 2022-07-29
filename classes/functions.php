@@ -10,13 +10,13 @@ function showHtmlRow($gain_lost, $bought, $current)
 		$percent = (($current - $bought)/$current)*100;
 		$percent = number_format($percent,2);
 		if ($gain_lost > 0){
-			echo 	"<td class='text-end bg-success text-white' data-bs-toggle='tooltip' data-bs-placement='right' title='$percent%'> ~".
-					 	convertMoney($gain_lost) 
-					 ."</td>";
+			echo 	"<td class='text-end text-white' data-bs-toggle='tooltip' data-bs-placement='right' title='$percent%'>
+						<span class='badge bg-success'> ~ ".convertMoney($gain_lost) ."</span>
+					 </td>";
 		} else if ($gain_lost < 0){ 
-			echo 	"<td class='text-end bg-danger text-white' data-bs-toggle='tooltip' data-bs-placement='right' title='$percent%'> ~". 
-						convertMoney($gain_lost) 
-					."</td>";
+			echo 	"<td class='text-end text-white' data-bs-toggle='tooltip' data-bs-placement='right' title='$percent%'>
+						<span class='badge bg-danger'> ~ ".convertMoney($gain_lost) ."</span>
+					</td>";
 		} else {
 			echo 	"<td class='text-end'>". convertMoney($gain_lost) ."</td>";
 		}
@@ -69,26 +69,28 @@ function time_elapsed_str($time)
 	return $string;
 }
 
-function select_min()
+function select_min($user)
 {
 	$mysql = new MySQL();
-	$query = "SELECT book, SUM(price * amount) as value FROM wallet_balance GROUP BY book ORDER by value ASC LIMIT 1";
+	$query = "select book, SUM(price * amount) as value FROM wallet_balance 
+			  where user = ".$user." GROUP BY book ORDER by value ASC LIMIT 1";
 	$data  = $mysql->mySQLquery($query);
 	return $data[0];
 }
 
-function select_max()
+function select_max($user)
 {
 	$mysql = new MySQL();	
-	$query = "SELECT book, SUM(price * amount) as value FROM wallet_balance GROUP BY book ORDER by value DESC LIMIT 1";
+	$query = "select book, SUM(price * amount) as value FROM wallet_balance 
+			  where user = ".$user." GROUP BY book ORDER by value DESC LIMIT 1";
 	$data  = $mysql->mySQLquery($query);
 	return $data[0];
 }
 
-function getCurrentChange($current_price)
+function getCurrentChange($current_price, $user)
 {
 	$mysql = new MySQL();
-	$query = "SELECT * FROM wallet_performance ORDER BY id DESC LIMIT 1";
+	$query = "select * FROM wallet_performance WHERE user = ".$user." ORDER BY id DESC LIMIT 1";
 	$data  = $mysql->mySQLquery($query);
 
 	if(!empty($data)){

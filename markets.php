@@ -47,7 +47,7 @@ if (Helpers::isApiConfigured($userId)){
 
 <html>
 	<head>
-		<title>Bitso Wallet (<?=$_SESSION['name']?>)</title>
+		<title>Bitso Wallet (<?=$user?>)</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">		
 		<!-- CSS only -->
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" 

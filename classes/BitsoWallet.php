@@ -28,7 +28,7 @@ class BitsoWallet extends Bitso
 	public function getCurrencysBought()
 	{
 		$mysql = new MySQL();
-		$query = "Select a.book, SUM(amount) as amount, SUM(price * amount) as value, b.file 
+		$query = "Select a.book, SUM(amount) as amount, SUM(price * amount) as value, b.currency, b.file 
 				FROM wallet_balance a LEFT JOIN wallet_currencys b ON a.book = b.book 
 				WHERE status = 1 and user = ".$this->user." GROUP BY a.book";
 		
@@ -257,10 +257,6 @@ class BitsoWallet extends Bitso
 	    return $response;
 	}
 
-	/* 
-	FOR TRADE
-	*/
-
 	public function updateBuyingPower($data)
 	{
 		$mysql = new MySQL();
@@ -271,6 +267,30 @@ class BitsoWallet extends Bitso
 		}
 
 	}
+
+	public function getLastPriceChange()
+    {
+        $mysql = new MySQL();
+        $query = "select * from wallet_performance where user = ".$this->user." ORDER BY id DESC LIMIT 2";
+        $data  = $mysql->mySQLquery($query);
+        
+        $values = array();
+
+        if (!empty($data)){
+            foreach ($data as $key => $value) {
+                $values[$key] = $value->amount;
+            }
+
+            $current_price  = $values[0];
+            $last_price     = $values[1];
+            
+            $change = (($current_price - $last_price) / $current_price) * 100;
+            $change = number_format($change, 2);
+
+            return $change;     
+        }
+
+    }
 
 	/* 
 	FOR DEBUG
@@ -291,6 +311,6 @@ class BitsoWallet extends Bitso
 		$file = fopen('/home/fortechm/test.fortech.mx/crons/'.$filename.'-'.$date.'.log' , 'a+');
 		fwrite($file, 'Content: '. $content);
 		fclose($file);
-	}	
+	}
 	
 }
