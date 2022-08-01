@@ -5,12 +5,16 @@ require_once ('../classes/BitsoWallet.php');
 use classes\BitsoWallet;
 use classes\MySQL;
 
+$userid  = null;
 $request = $_REQUEST['request'];
+$userid  = $_REQUEST['userid'];
 $data_array = array();
 
-$mysql = new MySQL();
-$bitsoWallet = new BitsoWallet();
-$bitsoWallet->writeLogfile('android', $request);
+if (!$userid){
+	die('Error no user id');
+}
+
+$bitsoWallet = new BitsoWallet($userid);
 
 switch($request){
 	case 'avg':
@@ -53,29 +57,19 @@ switch($request){
 		$currentBalance = array_sum(array_values($balances_array));
 
 		$data_array[0] = array(
-			"key" 	=> "CURRENT PERFORMANCE",
-			"value" => '$'. $bitsoWallet->getCurrentChange($currentBalance) .'%',
-		);
-
-		$data_array[1] = array(
-			"key" 	=> "AVG TRADES",
-			"value" => $bitsoWallet->getAverageTrades(),			
-		);		
-
-		$data_array[2] = array(
-			"key" 	=> "PERFORMANCE LAST 36 HOURS",
+			"key" 	=> "Perform 36 Hrs",
 			"value" => $bitsoWallet->getPerformanceIntime(36).'%',
 		);
 
-		$data_array[3] = array(
-			"key" 	=> "TOTAL WALLET BALANCE",
-			"value" => '$'. number_format( $currentBalance, 2 ),
+		$data_array[1] = array(
+			"key" 	=> "Current Perform",
+			"value" => $bitsoWallet->getCurrentChange($currentBalance) .'%',
 		);
 
-		$data_array[4] = array(
-			"key" 	=> "OLDEST BUY",
-			"value" => $bitsoWallet->getOldestBuy(),
-		);		
+		$data_array[2] = array(
+			"key" 	=> "Total Wallet",
+			"value" => '$'. number_format( $currentBalance, 2 ),
+		);				
 		
 		echo json_encode($data_array);
 
