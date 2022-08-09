@@ -102,6 +102,8 @@ class MySQL {
 		$query  = "INSERT INTO ". $tbl ."(" ;
 		$query .= implode(', ', array_keys($data)) . ") VALUES (". implode(',', array_values($data)).")";
 
+		$this->queryResult = $query;
+
 		if ( mysqli_query($this->connect, $query) ){
 			return TRUE;
 		} else {

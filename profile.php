@@ -31,7 +31,6 @@ if (Helpers::isApiConfigured($userId)){
 
 $notify1 = null;
 $notify2 = null;
-
 $userConfig = Helpers::getUserConfig($userId);
 
 if ($userConfig){
@@ -204,7 +203,7 @@ if ($userConfig){
 									<input type="text" name="book" id="book" class="form-control" placeholder="btc_mxn">
 								</div>
 								<div class="mb-3">
-									<input type="button" id="confirm" value="Add" class="btn btn-primary" >
+									<input type="button" value="Add" class="btn btn-primary" onClick="save_new_favorit(<?=$userId?>)">
 								</div>
 							</form>
 						</div>
@@ -234,12 +233,34 @@ if ($userConfig){
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script language="JavaScript">
 
+var toastLive = document.getElementById('liveToast');		
+var toast = new bootstrap.Toast(toastLive);		
+
+function save_new_favorit(user)
+{
+	var book = $("#book").val();
+
+	$.post("backend.php",{
+		option:'save_new_favorit',
+		book:book,
+		user:user
+	}, function(response){
+		const success = JSON.parse(response);
+		if (success.success){
+			$("#message").text("Message: " + success.message);
+			toast.show();
+			history.go(0);
+		} else {
+			$("#message").text("Message: " + success.message);
+			toast.show();
+		}
+	});	
+}
+
 function save_config(user)
 {
 	var bitsoKey 	= $("#bitsoKey").val();
 	var bitsoSecret = $("#bitsoSecret").val();
-	var toastLive = document.getElementById('liveToast');		
-	var toast = new bootstrap.Toast(toastLive);		
 	
 	$.post("backend.php",{
 		option:'save_config',
@@ -253,28 +274,10 @@ function save_config(user)
 	
 }
 
-function bitso_save(amount, price, book)
-{
-	var toastLive = document.getElementById('liveToast');		
-	var toast = new bootstrap.Toast(toastLive);		
-	
-	$.post("backend.php",{
-		option:'bitso_save',
-		amount:amount,
-		price:price,
-		book:book
-	}, function(response){
-		$("#message").text("Message: " + response);
-		toast.show();			
-	});
-}
-
 function save_favorit(book, status)
 {
 	var toastLive = document.getElementById('liveToast');		
 	var toast = new bootstrap.Toast(toastLive);
-
-	console.log(status);
 
 	$.post("backend.php",{
 		option:'save_favorit',

@@ -56,6 +56,30 @@ switch($option){
 		echo "</table>";
 	break;
 
+	case 'save_new_favorit':
+		$book   = $_POST["book"];
+		$userid = $_POST["user"];
+		
+		$vars = array(
+			"book"   => "'$book'",
+			"user" => "'$userid'",
+		);
+		
+		if ($mysql->mySQLinsert("wallet_favorites", $vars)){
+			$message = [
+				'success' => true,
+				'message' => 'El registro se guardo con exito'
+			];
+		} else {
+			$message = [
+				'success' => false,
+				'message' => "Ocurrio un error: ". $mysql->getQueryResult()
+			];
+		}
+		echo json_encode($message);
+
+	break;	
+
 	case 'save_favorit':
 		$book   = $_POST["book"];
 		$status = $_POST["status"];
