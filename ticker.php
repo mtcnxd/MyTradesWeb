@@ -146,8 +146,8 @@ if (Helpers::isApiConfigured($userId)){
 								}
 							}
 
-				    		$min = select_min($userId);
-							$max = select_max($userId);
+				    		$min = Helpers::getMinimumInvestment($userId);
+							$max = Helpers::getMaximumInvestment($userId);
 							?>					
 							<canvas class="p-3" id="myChart" width="250" height="100"></canvas>
 						</div>
@@ -162,7 +162,7 @@ if (Helpers::isApiConfigured($userId)){
 									<div class="align-items-center row">
 										<div class="col">
 									    	<h6 class="card-title text-muted text-uppercase fs-7">
-									    		<?="Less investment: ". $min->book;?>
+									    		<?="More investment MXN: ". extractCurrency($min->book);?>
 									    	</h6>
 									    	<h5 class="card-subtitle mb-2 fs-6">
 									    		<?=convertMoney($min->value);?>
@@ -182,7 +182,7 @@ if (Helpers::isApiConfigured($userId)){
 									<div class="align-items-center row">
 										<div class="col">
 									    	<h6 class="card-title text-muted text-uppercase fs-7">
-									    		<?="More investment: ". $max->book;?>
+									    		<?="More investment USD: ". extractCurrency($max->book);?>
 									    	</h6>
 									    	<h5 class="card-subtitle mb-2 fs-6">
 									    		<?=convertMoney($max->value);?>

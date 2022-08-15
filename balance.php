@@ -160,7 +160,7 @@ if (Helpers::isApiConfigured($userId)){
 												Current performance
 											</h6>
 											<h5 class="card-subtitle mb-2 fs-6">
-												<?=getCurrentChange($value_total, $userId) .'%';?>
+												<?=Helpers::getCurrentChange($value_total, $userId) .'%';?>
 											</h5>			
 										</div>
 										<div class="col-auto">					
@@ -180,7 +180,7 @@ if (Helpers::isApiConfigured($userId)){
 												Performance last 24 hours
 											</h6>
 											<h5 class="card-subtitle mb-2 fs-6">
-												<?=getPerformanceIntime(24) .'%';?>
+												<?=helpers::getPerformanceIntime(24, $userId) .'%';?>
 											</h5>			
 										</div>
 										<div class="col-auto">					

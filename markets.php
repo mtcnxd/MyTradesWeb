@@ -81,7 +81,7 @@ if (Helpers::isApiConfigured($userId)){
 							<thead>
 								<tr class="table-custom text-uppercase fs-7">
 									<th scope="col">Book</th>
-									<th scope="col" class="text-end">Last sell price</th>
+									<th scope="col" class="text-end">Last buy/sell price</th>
 									<th scope="col" class="text-end">Current Price</th>
 									<th scope="col" class="text-end">Change</th>									
 									<th scope="col" class="text-end">Low Price</th>
@@ -169,7 +169,7 @@ if (Helpers::isApiConfigured($userId)){
 
 			<div class="row">
 
-				<div class="col-md-5">
+				<div class="col-md-6">
 					<div class="card border border-custom shadow-sm rounded mb-4">
 						<div class="card-header">
 							<h6 class="card-header-title">Change of book <?=$book?></h6>
@@ -203,7 +203,7 @@ if (Helpers::isApiConfigured($userId)){
 					</div>
 				</div>
 
-				<div class="col-md-4">
+				<div class="col-md-6">
 					<div class="card border border-custom shadow-sm rounded mb-4">
 						<div class="card-header">
 							<h6 class="card-header-title">Crypto BOT (Active)</h6>

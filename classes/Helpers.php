@@ -136,5 +136,51 @@ class Helpers
         return $prices_array;
     }
 
+    static function getPerformanceIntime($time_elapsed = 12, $user)
+    {
+        $mysql = new MySQL();
+        $query = "select SUM(difference) as performance FROM (
+                    select difference FROM wallet_performance where user = ".$user." ORDER BY date DESC LIMIT $time_elapsed) as AVG";
+        $result = $mysql->mySQLquery($query);
+
+        return number_format($result[0]->performance, 2);
+    }
+
+    static function getCurrentChange($current_price, $user)
+    {
+        $mysql = new MySQL();
+        $query = "select * FROM wallet_performance WHERE user = ".$user." ORDER BY id DESC LIMIT 1";
+        $data  = $mysql->mySQLquery($query);
+    
+        if(!empty($data)){
+            $last_price = $data[0]->amount;
+        
+            $change = (($current_price - $last_price) / $current_price) * 100;
+            $change = number_format($change, 2);
+    
+            return $change;
+        }
+        
+    }    
+
+    static function getMinimumInvestment($user)
+    {
+        $mysql = new MySQL();
+        $query = "select book, sum(price * amount) value from wallet_balance where user = ".$user."
+                    and book like '%_mxn' and status = true group by book order by value desc limit 1";
+        $data  = $mysql->mySQLquery($query);
+    
+        return $data[0];
+    }
+    
+    static function getMaximumInvestment($user)
+    {
+        $mysql = new MySQL();	
+        $query = "select book, sum(price * amount) value from wallet_balance where user = ".$user."
+                    and book like '%_usd' and status = true group by book order by value desc limit 1";
+        $data  = $mysql->mySQLquery($query);
+
+        return $data[0];
+    }
 
 }

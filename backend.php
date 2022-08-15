@@ -101,7 +101,7 @@ switch($option){
 		$bitsoSecret = $_POST["bitsoSecret"];
 		
 		$vars = array(
-			"bitso_key"	  =>"$bitsoKey", 
+			"bitso_key"	   =>"$bitsoKey", 
 			"bitso_secret" =>"$bitsoSecret"
 		);
 		
