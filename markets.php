@@ -40,7 +40,7 @@ if (Helpers::isApiConfigured($userId)){
 	$ticker 	 = $bitsoWallet->getTicker();
 	$priceData 	 = $bitsoWallet->getChartMarketData($book, 48);	
 
-	$percent 	 = (($ticker[$book] - $prices->price)/$ticker[$book]) *100 ;
+	$myPercent 	 = (($ticker[$book] - $prices->price)/$ticker[$book]) *100 ;
 }
 
 ?>
@@ -172,13 +172,12 @@ if (Helpers::isApiConfigured($userId)){
 				<div class="col-md-6">
 					<div class="card border border-custom shadow-sm rounded mb-4">
 						<div class="card-header">
-							<h6 class="card-header-title">Change of book <?=$book?></h6>
+							<h6 class="card-header-title">Change of book <?=$book?> las 72 hrs</h6>
 							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
 						</div>
 						<div class="card-body">
 							<?php
 							$dataCurrency = Helpers::getChangeCurrency($book, 72);
-
 							$difference = ($dataCurrency['new_price']->price - $dataCurrency['old_price']->price);
 							$percent 	= ($difference / $dataCurrency['new_price']->price) *100;
 
@@ -193,7 +192,7 @@ if (Helpers::isApiConfigured($userId)){
 							}
 								echo '<li class="list-group-item">
 										<div class="row">
-											<div class="col">Change </div>
+											<div class="col">Percentage </div>
 											<div class="col text-end">'. number_format($percent, 2)  .'%</div>
 										</div>
 									</li>';
@@ -206,21 +205,37 @@ if (Helpers::isApiConfigured($userId)){
 				<div class="col-md-6">
 					<div class="card border border-custom shadow-sm rounded mb-4">
 						<div class="card-header">
-							<h6 class="card-header-title">Crypto BOT (Active)</h6>
+							<h6 class="card-header-title">Crypto BOT (Disable)</h6>
 							<svg class="card-header-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pie-chart"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
 						</div>
 						<div class="card-body">
+							<ul class="list-group list-group-flush">
 							<?php
+							if ($myPercent){
+								if ($myPercent > 7){
+									echo "<li class='list-group-item'>";
+									echo "	<div class='row'>";
+									echo "		<div class='col'>".$prices->amount." ". extractCurrency($book) ."</div>";
+									echo "		<div class='col text-end'><span class='badge bg-success'>SELL</span></div>";
+									echo "	</div>";
+									echo "</li>";
+									echo "<li class='list-group-item'>";
+									echo "	<p>".$myPercent."</p>";
+									echo "</li>";
 
-							if ($percent){
-								if ($percent > 6){
-									echo "<p class='card-text text-success'>Sell ". $prices->amount ." ". extractCurrency($book) ."</p>";
-
-								} else if ($percent < -5){
-									echo "<p class='card-text text-danger'>Buy ". $book ." price ". convertMoney($ticker[$book]) ."</p>";
+								} else if ($myPercent < -5){
+									echo "<li class='list-group-item'>";
+									echo "	<div class='row'>";
+									echo "		<div class='col'>Current price: ". convertMoney($ticker[$book]) ."</div>";
+									echo "		<div class='col text-end'><span class='badge bg-danger'>BUY</span></div>";
+									echo "	</div>";
+									echo "</li>";
+									echo "<li class='list-group-item'>";
+									echo "	<p>".$myPercent."</p>";
+									echo "</li>";
 
 								} else {
-									echo "<p class='card-text'>Waiting for buy: ". $percent ."</p>";
+									echo "<p class='card-text'>Waiting for buy: ".$myPercent."</p>";
 
 								}	
 
@@ -229,6 +244,7 @@ if (Helpers::isApiConfigured($userId)){
 							}
 
 							?>
+							</ul>
 						</div>
 					</div>
 				</div>
