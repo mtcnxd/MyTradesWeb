@@ -15,11 +15,11 @@ if($_POST){
 	foreach($result as $value){
 		if ($username == $value->username && $password == $value->password){
 			session_start();
-			$_SESSION['userid']  = $value->userid;
-			$_SESSION['name']    = $value->username;
-			$_SESSION['email']   = $value->email;
-			$_SESSION['key']     = $value->bitso_key;
-			$_SESSION['secret']  = $value->bitso_secret;
+			$_SESSION['userid'] = $value->userid;
+			$_SESSION['name']   = $value->username;
+			$_SESSION['email']  = $value->email;
+			$_SESSION['key']    = $value->bitso_key;
+			$_SESSION['secret'] = $value->bitso_secret;
 			
 			header('Location: ticker.php');
 

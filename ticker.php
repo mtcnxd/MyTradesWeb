@@ -13,12 +13,12 @@ if (!$_SESSION || !$_SESSION['userid']) {
 }
 
 $userId = $_SESSION['userid'];
-$user = $_SESSION['name'];
-$icon = null;
+$user   = $_SESSION['name'];
+$icon   = null;
 $result = null;
 $lastChange = null;
-$data = array();
-$chart_data = array();
+$wallet_data = array();
+$chart_data  = array();
 
 if (Helpers::isApiConfigured($userId)){
 	$bitsoWallet = new BitsoWallet($userId);
@@ -30,7 +30,7 @@ if (Helpers::isApiConfigured($userId)){
 	}
 
 	$result = $bitsoWallet->getCurrencysBought();
-	$data   = $bitsoWallet->getChartPerformance();
+	$wallet_data  = $bitsoWallet->getChartPerformance();
 	$ticker_array = $bitsoWallet->getFullTicker();
 	$lastChange = $bitsoWallet->getLastPriceChange();
 		
@@ -140,8 +140,8 @@ if (Helpers::isApiConfigured($userId)){
 							</div>
 							<?php
 
-							if ($data){
-								foreach ($data as $chart) {
+							if ($wallet_data){
+								foreach ($wallet_data as $chart) {
 									$chart_data[$chart->date] = $chart->amount;
 								}
 							}
