@@ -40,7 +40,7 @@ class BitsoWallet extends Bitso
         $mysql = new MySQL();
         $sql = "select * from (
                     select avg(amount) amount, date_format(date, '%Y-%m-%d') as newdate 
-                    from wallet_performance where user = ".$this->user." group by newdate order by date desc limit 60
+                    from wallet_performance where user = ".$this->user." group by newdate order by date desc limit 70
                 ) tbl order by newdate asc";
         
         return $mysql->mySQLquery($sql);
